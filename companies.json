@@ -376,7 +376,9 @@
       "sector": "other",
       "ats": "eightfold",
       "host": "apply.careers.microsoft.com",
-      "domain": "microsoft.com"
+      "domain": "microsoft.com",
+      "via": "mac",
+      "delay": 4
     },
     {
       "name": "Fluke (Fortive)",
@@ -762,139 +764,162 @@
       "name": "L3Harris (Redmond in-space propulsion, ex-Aerojet)",
       "ats": "dejobs",
       "company": "L3Harris",
-      "sector": "aero"
+      "sector": "aero",
+      "via": "mac"
     },
     {
       "name": "Safran (Everett/Marysville/Redmond: Safran Cabin, Electrical & Power, IDD)",
       "ats": "dejobs",
       "company": "Safran",
-      "sector": "aero"
+      "sector": "aero",
+      "via": "mac"
     },
     {
       "name": "Alaska Airlines (maintenance & engineering)",
       "ats": "dejobs",
       "company": "Alaska Airlines",
-      "sector": "aero"
+      "sector": "aero",
+      "via": "mac"
     },
     {
       "name": "Aviation Technical Services (Everett MRO)",
       "ats": "dejobs",
       "company": "Aviation Technical Services",
-      "sector": "aero"
+      "sector": "aero",
+      "via": "mac"
     },
     {
       "name": "Huntington Ingalls / HII Mission Technologies (Bremerton, Keyport)",
       "ats": "dejobs",
       "company": "HII",
-      "sector": "aero"
+      "sector": "aero",
+      "via": "mac"
     },
     {
       "name": "ManTech (Bremerton/Silverdale)",
       "ats": "dejobs",
       "company": "ManTech",
-      "sector": "aero"
+      "sector": "aero",
+      "via": "mac"
     },
     {
       "name": "SAIC (Oak Harbor/Seattle)",
       "ats": "dejobs",
       "company": "SAIC",
-      "sector": "aero"
+      "sector": "aero",
+      "via": "mac"
     },
     {
       "name": "Amentum (JBLM/Oak Harbor)",
       "ats": "dejobs",
       "company": "Amentum",
-      "sector": "aero"
+      "sector": "aero",
+      "via": "mac"
     },
     {
       "name": "Panasonic Avionics (Bothell)",
       "ats": "dejobs",
       "company": "Panasonic Avionics Corporation",
-      "sector": "aero"
+      "sector": "aero",
+      "via": "mac"
     },
     {
       "name": "Vigor (Seattle shipyard)",
       "ats": "dejobs",
       "company": "Vigor, LLC",
-      "sector": "other"
+      "sector": "other",
+      "via": "mac"
     },
     {
       "name": "Foss Maritime",
       "ats": "dejobs",
       "company": "Foss Maritime",
-      "sector": "other"
+      "sector": "other",
+      "via": "mac"
     },
     {
       "name": "All American Marine (Bellingham boatbuilder)",
       "ats": "dejobs",
       "company": "All American Marine",
-      "sector": "other"
+      "sector": "other",
+      "via": "mac"
     },
     {
       "name": "Puget Sound Naval Shipyard (U.S. Pacific Fleet, Bremerton/Bangor)",
       "ats": "dejobs",
       "company": "U.S. Pacific Fleet, Commander in Chief",
-      "sector": "aero"
+      "sector": "aero",
+      "via": "mac"
     },
     {
       "name": "NUWC Division Keyport (NAVSEA)",
       "ats": "dejobs",
       "company": "Naval Sea Systems Command",
-      "sector": "aero"
+      "sector": "aero",
+      "via": "mac"
     },
     {
       "name": "NAVFAC Northwest (Silverdale/Bremerton)",
       "ats": "dejobs",
       "company": "Naval Facilities Engineering Command",
-      "sector": "other"
+      "sector": "other",
+      "via": "mac"
     },
     {
       "name": "Delta Marine (Seattle yacht builder)",
       "ats": "dejobs",
       "company": "Delta Marine",
-      "sector": "other"
+      "sector": "other",
+      "via": "mac"
     },
     {
       "name": "Saalex (NUWC Keyport contractor)",
       "ats": "dejobs",
       "company": "Saalex Corporation",
-      "sector": "aero"
+      "sector": "aero",
+      "via": "mac"
     },
     {
       "name": "Celestica (Seattle)",
       "ats": "dejobs",
       "company": "Celestica",
-      "sector": "other"
+      "sector": "other",
+      "via": "mac"
     },
     {
       "name": "Army Corps of Engineers, Seattle District",
       "ats": "dejobs",
       "company": "U.S. Army Corps of Engineers",
-      "sector": "other"
+      "sector": "other",
+      "via": "mac"
     },
     {
       "name": "Jacobs (Seattle)",
       "ats": "dejobs",
       "company": "Jacobs",
-      "sector": "other"
+      "sector": "other",
+      "via": "mac"
     },
     {
       "name": "WSP (Seattle)",
       "ats": "dejobs",
       "company": "WSP USA",
-      "sector": "other"
+      "sector": "other",
+      "via": "mac"
     },
     {
       "name": "AECOM (Seattle)",
       "ats": "dejobs",
       "company": "AECOM",
-      "sector": "other"
+      "sector": "other",
+      "via": "mac"
     },
     {
       "name": "Stantec (Seattle)",
       "ats": "dejobs",
       "company": "Stantec",
-      "sector": "other"
+      "sector": "other",
+      "via": "mac"
     }
   ],
   "manual": [

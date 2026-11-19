@@ -185,7 +185,7 @@ def eightfold(c, cache):
             start += len(pos) or 10
             if not pos or start >= d.get('count', 0):
                 break
-            time.sleep(1.0)  # these boards rate-limit
+            time.sleep(c.get('delay', 1.0))  # these boards rate-limit
     return list(seen.values())
 
 
@@ -322,9 +322,39 @@ def careers_url(c):
     ).get(a, lambda: c.get('careers_url', ''))()
 
 
+# ---------- boards that block cloud servers ----------
+# Some boards (DirectEmployers, Microsoft) refuse GitHub's servers. The Mac checks
+# just those (watch.py --mac, from a LaunchAgent) and pushes data/mac.json; the cloud
+# run uses those results if they're fresh, otherwise keeps those roles as they were.
+MAC = os.path.join(STATE_DIR, 'mac.json')
+
+
+def run_mac():
+    mac = [c for c in CFG['companies'] if c.get('via') == 'mac']
+    with ThreadPoolExecutor(4) as ex:
+        res = list(ex.map(check, [(c, {}) for c in mac]))
+    for name, total, hits, err in res:
+        log(f'{name}: ' + (f'ERROR {err}' if err else f'{total} postings, {len(hits)} match'))
+    os.makedirs(STATE_DIR, exist_ok=True)
+    json.dump(dict(fetched=now().isoformat(timespec='minutes'), results=res), open(MAC, 'w'), separators=(',', ':'))
+
+
+def mac_results(mac):
+    try:
+        d = json.load(open(MAC))
+        age = now() - datetime.fromisoformat(d['fetched'])
+        fresh = age < timedelta(hours=30)
+    except Exception:
+        d, fresh = {'results': []}, False
+    got = {r[0]: r for r in d['results']} if fresh else {}
+    return [tuple(got[c['name']]) if c['name'] in got else (c['name'], 0, [], 'no fresh results from the Mac') for c in mac]
+
+
 # ---------- main ----------
 def main():
     dry = '--dry-run' in sys.argv
+    if '--mac' in sys.argv:
+        return run_mac()
     os.makedirs(STATE_DIR, exist_ok=True)
     if '--reset' in sys.argv:
         if os.path.exists(STATE):
@@ -337,9 +367,12 @@ def main():
     state.setdefault('baseline_date', today)
     run_id = now().replace(tzinfo=None).isoformat(timespec='seconds')
 
+    cloud = [c for c in CFG['companies'] if c.get('via') != 'mac']
+    mac = [c for c in CFG['companies'] if c.get('via') == 'mac']
     with ThreadPoolExecutor(8) as ex:
-        results = list(ex.map(check, [(c, state['locs']) for c in CFG['companies']]))
+        results = list(ex.map(check, [(c, state['locs']) for c in cloud]))
         page_results = list(ex.map(check_page, CFG['manual']))
+    results += mac_results(mac)
 
     for name, digest, text, err in page_results:
         p = state['pages'].setdefault(name, {})
