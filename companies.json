@@ -1,0 +1,1257 @@
+{
+  "filters": {
+    "engineer": "\\bengineer|engineering\\b",
+    "intern": "\\binterns?(hip)?\\b|\\bco-?op\\b",
+    "field": "mechanical|manufactur|propulsion|test|design|structur|thermal|fluid|tool|production|hardware|integration|aerospace|materials|process|industrial|mechanism|electrical|quality|systems|R&D|robotic|controls",
+    "exclude": "senior|\\bsr\\b|staff|principal|\\blead\\b|manager|director|head of|chief|\\bvp\\b|president|fellow|\\bIII\\b|\\bIV\\b|\\bV\\b|expert|software|developer|\\bSDE\\b|data|cloud|network|\\bIT\\b|security|cyber|devops|site reliability|machine learning|\\bML\\b|\\bAI\\b|sales|solutions|support engineer|customer|marketing|finance|recruit|legal|business|technician|machinist|assembler|operator|contract|game|undergraduate|field service|systems? development engineer|region services|ASIC",
+    "local": "\\b(seattle|bellevue|redmond|kirkland|bothell|woodinville|issaquah|everett|mukilteo|lynnwood|arlington, wa|marysville|kent|renton|auburn|tukwila|federal way|tacoma|frederickson|puyallup|sumner|bremerton|silverdale|sedro|hamilton|bellingham|mount vernon|burlington|puget)\\b|washington(?!,? ?d\\.?c)|\\bWA\\b",
+    "far": "moses lake|spokane|richland|pullman|wenatchee|yakima|vancouver, wa|layton|, UT\\b|utah|district of columbia|\\bD\\.?C\\.?\\b"
+  },
+  "companies": [
+    {
+      "name": "Helion",
+      "ats": "ashby",
+      "slug": "helion",
+      "sector": "energy"
+    },
+    {
+      "name": "TerraPower",
+      "ats": "greenhouse",
+      "slug": "terrapowerllc",
+      "sector": "energy"
+    },
+    {
+      "name": "Zap Energy",
+      "ats": "rippling",
+      "slug": "zap-energy-careers",
+      "sector": "energy"
+    },
+    {
+      "name": "Avalanche Energy",
+      "ats": "ashby",
+      "slug": "avalanchefusion",
+      "sector": "energy"
+    },
+    {
+      "name": "Zeno Power",
+      "ats": "breezy",
+      "slug": "zeno-power",
+      "sector": "energy"
+    },
+    {
+      "name": "Group14",
+      "ats": "greenhouse",
+      "slug": "group14",
+      "sector": "energy"
+    },
+    {
+      "name": "Blue Origin",
+      "ats": "workday",
+      "tenant": "blueorigin",
+      "wd": "wd5",
+      "site": "BlueOrigin",
+      "sector": "aero",
+      "max_per_term": 1200
+    },
+    {
+      "name": "SpaceX / Starlink",
+      "ats": "greenhouse",
+      "slug": "spacex",
+      "sector": "aero"
+    },
+    {
+      "name": "Amazon",
+      "ats": "amazon"
+    },
+    {
+      "name": "Cowboy Space",
+      "ats": "ashby",
+      "slug": "cowboyspace",
+      "sector": "aero"
+    },
+    {
+      "name": "Stoke Space",
+      "ats": "greenhouse",
+      "slug": "stokespacetechnologies",
+      "sector": "aero"
+    },
+    {
+      "name": "Portal Space Systems",
+      "ats": "greenhouse",
+      "slug": "portalspacesystems",
+      "sector": "aero"
+    },
+    {
+      "name": "Gravitics",
+      "ats": "greenhouse",
+      "slug": "graviticsinc",
+      "sector": "aero"
+    },
+    {
+      "name": "Starfish Space",
+      "ats": "ashby",
+      "slug": "starfish-space-inc",
+      "sector": "aero"
+    },
+    {
+      "name": "BlackSky",
+      "ats": "greenhouse",
+      "slug": "blacksky",
+      "sector": "aero"
+    },
+    {
+      "name": "Hubble Network",
+      "ats": "greenhouse",
+      "slug": "hubblenetwork",
+      "sector": "aero"
+    },
+    {
+      "name": "Boeing",
+      "ats": "workday",
+      "tenant": "boeing",
+      "wd": "wd1",
+      "site": "EXTERNAL_CAREERS",
+      "sector": "aero",
+      "search_terms": [
+        "engineer Everett",
+        "engineer Renton",
+        "engineer Seattle",
+        "engineer Kent",
+        "engineer Auburn",
+        "engineer Tukwila",
+        "engineer Washington",
+        "intern Washington"
+      ],
+      "max_per_term": 400
+    },
+    {
+      "name": "Janicki Industries",
+      "ats": "ukg",
+      "board": "https://recruiting2.ultipro.com/JAN1000JANI/JobBoard/693b35f4-c147-4487-97c3-600a31f4816b",
+      "sector": "aero"
+    },
+    {
+      "name": "Toray Composites",
+      "ats": "ukg",
+      "board": "https://recruiting.ultipro.com/TOR1003TCAI2/JobBoard/1a3761a6-d04c-48fb-abb5-beac6bd39773",
+      "sector": "aero"
+    },
+    {
+      "name": "Crane Aerospace",
+      "ats": "workday",
+      "tenant": "cranecompany",
+      "wd": "wd5",
+      "site": "Careers",
+      "sector": "aero"
+    },
+    {
+      "name": "Hexcel",
+      "ats": "workday",
+      "tenant": "hexcel",
+      "wd": "wd5",
+      "site": "HexcelCareers",
+      "sector": "aero"
+    },
+    {
+      "name": "Astronics",
+      "ats": "greenhouse",
+      "slug": "astronicscorporation",
+      "sector": "aero"
+    },
+    {
+      "name": "Echodyne",
+      "ats": "greenhouse",
+      "slug": "echodynecorp",
+      "sector": "aero"
+    },
+    {
+      "name": "Stryker",
+      "ats": "workday",
+      "tenant": "stryker",
+      "wd": "wd1",
+      "site": "StrykerCareers",
+      "sector": "other"
+    },
+    {
+      "name": "Philips",
+      "ats": "workday",
+      "tenant": "philips",
+      "wd": "wd3",
+      "site": "jobs-and-careers",
+      "sector": "other"
+    },
+    {
+      "name": "Genie (Terex)",
+      "ats": "workday",
+      "tenant": "terex",
+      "wd": "wd1",
+      "site": "TerexCareers",
+      "sector": "other"
+    },
+    {
+      "name": "Nintendo of America",
+      "ats": "greenhouse",
+      "slug": "nintendo",
+      "sector": "other"
+    },
+    {
+      "name": "Carbon Robotics",
+      "ats": "ashby",
+      "slug": "carbon-robotics",
+      "sector": "other"
+    },
+    {
+      "name": "Impinj",
+      "ats": "greenhouse",
+      "slug": "impinjexternal",
+      "sector": "other"
+    },
+    {
+      "name": "Northrop Grumman",
+      "sector": "aero",
+      "ats": "workday",
+      "tenant": "ngc",
+      "wd": "wd1",
+      "site": "Northrop_Grumman_External_Site",
+      "search_terms": [
+        "engineer Washington",
+        "engineer Everett",
+        "engineer Bothell",
+        "engineer Silverdale",
+        "engineer Oak Harbor",
+        "engineer Keyport",
+        "engineer Bremerton",
+        "engineer Lynnwood",
+        "intern Washington"
+      ],
+      "max_per_term": 200
+    },
+    {
+      "name": "Collins Aerospace / RTX",
+      "sector": "aero",
+      "ats": "workday",
+      "tenant": "globalhr",
+      "wd": "wd5",
+      "site": "REC_RTX_Ext_Gateway",
+      "search_terms": [
+        "engineer Washington",
+        "engineer Everett",
+        "engineer Bothell",
+        "engineer Silverdale",
+        "engineer Oak Harbor",
+        "engineer Keyport",
+        "engineer Bremerton",
+        "engineer Lynnwood",
+        "intern Washington"
+      ],
+      "max_per_term": 200
+    },
+    {
+      "name": "CACI (incl. Amergint, Bothell)",
+      "sector": "aero",
+      "ats": "workday",
+      "tenant": "caci",
+      "wd": "wd1",
+      "site": "External",
+      "search_terms": [
+        "engineer Washington",
+        "engineer Everett",
+        "engineer Bothell",
+        "engineer Silverdale",
+        "engineer Oak Harbor",
+        "engineer Keyport",
+        "engineer Bremerton",
+        "engineer Lynnwood",
+        "intern Washington"
+      ],
+      "max_per_term": 200
+    },
+    {
+      "name": "Leidos",
+      "sector": "aero",
+      "ats": "workday",
+      "tenant": "leidos",
+      "wd": "wd5",
+      "site": "External",
+      "search_terms": [
+        "engineer Washington",
+        "engineer Everett",
+        "engineer Bothell",
+        "engineer Silverdale",
+        "engineer Oak Harbor",
+        "engineer Keyport",
+        "engineer Bremerton",
+        "engineer Lynnwood",
+        "intern Washington"
+      ],
+      "max_per_term": 200
+    },
+    {
+      "name": "General Dynamics IT (JBLM)",
+      "sector": "aero",
+      "ats": "workday",
+      "tenant": "gdit",
+      "wd": "wd5",
+      "site": "External_Career_Site"
+    },
+    {
+      "name": "Universal Avionics (Redmond)",
+      "sector": "aero",
+      "ats": "ukg",
+      "board": "https://recruiting.ultipro.com/UNI1039UASC/JobBoard/6038d855-6c9a-480e-9c31-fccbf1f9f16f"
+    },
+    {
+      "name": "Teague",
+      "sector": "aero",
+      "ats": "greenhouse",
+      "slug": "teague"
+    },
+    {
+      "name": "Honeywell Aerospace",
+      "sector": "aero",
+      "ats": "oracle",
+      "host": "icfcjb.fa.ocs.oraclecloud.com",
+      "site": "CX_4001"
+    },
+    {
+      "name": "Lockheed Martin (Silverdale/Bangor)",
+      "sector": "aero",
+      "ats": "eightfold",
+      "host": "lockheedmartin.eightfold.ai",
+      "domain": "lockheedmartin.com",
+      "query": "Silverdale"
+    },
+    {
+      "name": "Xplore",
+      "sector": "aero",
+      "ats": "workable",
+      "slug": "xplore-inc"
+    },
+    {
+      "name": "KBR",
+      "sector": "aero",
+      "ats": "workday",
+      "tenant": "kbr",
+      "wd": "wd5",
+      "site": "KBR_Careers",
+      "search_terms": [
+        "engineer Washington",
+        "engineer Everett",
+        "engineer Bothell",
+        "engineer Silverdale",
+        "engineer Oak Harbor",
+        "engineer Keyport",
+        "engineer Bremerton",
+        "engineer Lynnwood",
+        "intern Washington"
+      ],
+      "max_per_term": 200
+    },
+    {
+      "name": "Anduril (Seattle)",
+      "sector": "aero",
+      "ats": "greenhouse",
+      "slug": "andurilindustries"
+    },
+    {
+      "name": "Overland AI",
+      "sector": "other",
+      "ats": "rippling",
+      "slug": "overland-ai"
+    },
+    {
+      "name": "BRINC Drones",
+      "sector": "aero",
+      "ats": "ashby",
+      "slug": "brinc"
+    },
+    {
+      "name": "Aerovy",
+      "sector": "energy",
+      "ats": "ashby",
+      "slug": "aerovy"
+    },
+    {
+      "name": "Microsoft",
+      "sector": "other",
+      "ats": "eightfold",
+      "host": "apply.careers.microsoft.com",
+      "domain": "microsoft.com"
+    },
+    {
+      "name": "Fluke (Fortive)",
+      "sector": "other",
+      "ats": "eightfold",
+      "host": "fortive.eightfold.ai",
+      "domain": "fortive.com"
+    },
+    {
+      "name": "Coffman Engineers",
+      "sector": "other",
+      "ats": "smartrecruiters",
+      "slug": "CoffmanEngineersInc"
+    },
+    {
+      "name": "KPFF",
+      "sector": "other",
+      "ats": "smartrecruiters",
+      "slug": "KPFFConsultingEngineers"
+    },
+    {
+      "name": "Flow International (Shape Technologies)",
+      "sector": "other",
+      "ats": "ukg",
+      "board": "https://recruiting2.ultipro.com/FLO1003FLOIN/JobBoard/5550d409-f5a7-4537-982e-8ee0b45527b0"
+    },
+    {
+      "name": "Cascade Natural Gas",
+      "sector": "energy",
+      "ats": "ukg",
+      "board": "https://recruiting2.ultipro.com/MDU1000MDUR/JobBoard/5c51e0cb-763a-431b-abb4-3cd4e58cb5ed"
+    },
+    {
+      "name": "Sound Transit",
+      "sector": "other",
+      "ats": "ukg",
+      "board": "https://recruiting.ultipro.com/SOU1036SOUND/JobBoard/dcc5dbea-875e-4cd1-bfd2-8e046cecc54f"
+    },
+    {
+      "name": "Darigold",
+      "sector": "other",
+      "ats": "ukg",
+      "board": "https://recruiting2.ultipro.com/DAR1001DARI/JobBoard/79e8d37a-ba2b-4b20-a8cb-97d585ea8433"
+    },
+    {
+      "name": "Parametrix",
+      "sector": "other",
+      "ats": "greenhouse",
+      "slug": "parametrix"
+    },
+    {
+      "name": "MicroVision",
+      "sector": "other",
+      "ats": "lever",
+      "slug": "microvision"
+    },
+    {
+      "name": "Hermanson Company",
+      "sector": "other",
+      "ats": "greenhouse",
+      "slug": "hermansoncompany"
+    },
+    {
+      "name": "Absher Construction",
+      "sector": "other",
+      "ats": "greenhouse",
+      "slug": "absherconstruction"
+    },
+    {
+      "name": "Romac Industries",
+      "sector": "other",
+      "ats": "ukg",
+      "board": "https://recruiting2.ultipro.com/ROM1002ROMAC/JobBoard/31717cb5-6ec3-43eb-9e10-b4ae21e434c3"
+    },
+    {
+      "name": "Swinerton",
+      "sector": "other",
+      "ats": "workday",
+      "tenant": "swinerton",
+      "wd": "wd1",
+      "site": "Swinerton_External_Career"
+    },
+    {
+      "name": "Hoffman Construction",
+      "sector": "other",
+      "ats": "oracle",
+      "host": "efsp.fa.us6.oraclecloud.com",
+      "site": "CX"
+    },
+    {
+      "name": "Sellen Construction",
+      "sector": "other",
+      "ats": "ukg",
+      "board": "https://sellen.rec.pro.ukg.net/SEL1501SELC/JobBoard/219aac72-451a-4167-8704-69906153fb09"
+    },
+    {
+      "name": "HNTB (Bellevue office)",
+      "sector": "other",
+      "ats": "workday",
+      "tenant": "hntb",
+      "wd": "wd5",
+      "site": "hntb_Careers"
+    },
+    {
+      "name": "BRINC",
+      "sector": "aero",
+      "ats": "ashby",
+      "slug": "brinc",
+      "notes": "Drones for police/first responders; HQ and new factory in Seattle (Mar 2026). Found via GeekWire defense/drone search."
+    },
+    {
+      "name": "K2 Space",
+      "sector": "aero",
+      "ats": "greenhouse",
+      "slug": "k2spacecorporation",
+      "notes": "Large high-power satellites (LA HQ); opened Seattle-area engineering office (Bellevue) 2026. Found via Greater Seattle Business Investment R"
+    },
+    {
+      "name": "Anduril Industries",
+      "sector": "aero",
+      "ats": "greenhouse",
+      "slug": "andurilindustries",
+      "notes": "Defense hardware; Seattle site at former Foss Shipyard (autonomous maritime vessels). Found via Greater Seattle Business Investment Report 2"
+    },
+    {
+      "name": "Lumotive",
+      "sector": "other",
+      "ats": "lever",
+      "slug": "lumotive",
+      "notes": "Solid-state beam-steering LiDAR chips (metasurface); HQ Redmond. Found from prior knowledge, verified via lumotive.com careers link."
+    },
+    {
+      "name": "Banyu Carbon",
+      "sector": "energy",
+      "ats": "greenhouse",
+      "slug": "banyucarbon",
+      "notes": "Sunlight-driven direct ocean/air carbon capture hardware; Seattle. Board exists with 0 openings."
+    },
+    {
+      "name": "AIM Intelligent Machines",
+      "sector": "other",
+      "ats": "ashby",
+      "slug": "aim",
+      "notes": "Autonomy retrofit kits for bulldozers/excavators (now also defense); HQ Seattle. Found via GeekWire defense/robotics search; board confirmed"
+    },
+    {
+      "name": "Endurance Energy",
+      "sector": "energy",
+      "ats": "ashby",
+      "slug": "endurance-energy",
+      "notes": "Modular subsea (offshore) geothermal power plants; HQ Lake Union, Seattle. Found via GeekWire geothermal search + VC job board (endurancegeo"
+    },
+    {
+      "name": "Kapta Space",
+      "sector": "aero",
+      "ats": "lever",
+      "slug": "kapta-space",
+      "notes": "Electronically-steered metamaterial radar (SAR/GMTI) satellites for defense; Seattle HQ, roles in Redmond. Found via GeekWire funding ($5M s"
+    },
+    {
+      "name": "Deako",
+      "sector": "other",
+      "ats": "breezy",
+      "slug": "deako",
+      "notes": "Modular smart light switches/lighting-control hardware; Seattle. Found via YC Seattle directory; breezy link on deako.com. Currently hiring "
+    },
+    {
+      "name": "Eclipse Space",
+      "sector": "aero",
+      "ats": "greenhouse",
+      "slug": "eclipsespace",
+      "notes": "Satellite constellation developer; HQ Redmond (hiring EE, ME-satellite systems, GNC, PCB mfg engineers, hybrid). Found via Alliance Velocity"
+    },
+    {
+      "name": "IonQ",
+      "sector": "other",
+      "ats": "greenhouse",
+      "slug": "ionq",
+      "notes": "Trapped-ion quantum computers; manufacturing/R&D facility in Bothell (many Bothell hardware roles). Public company, lesser known locally. Fo"
+    },
+    {
+      "name": "Armada",
+      "sector": "other",
+      "ats": "greenhouse",
+      "slug": "armada",
+      "notes": "Portable/modular edge AI data centers (Galleon); ~120-person engineering hub in Bellevue (mostly software, some electrical/data-center desig"
+    },
+    {
+      "name": "Orbital Robotics",
+      "sector": "aero",
+      "ats": "ashby",
+      "slug": "orbital-robotics",
+      "notes": "Robotic arms for on-orbit servicing/capture; Seattle (plus Huntsville). Found via Alliance Velocity space directory + GeekWire Awards hardwa"
+    },
+    {
+      "name": "Interlune",
+      "sector": "aero",
+      "ats": "breezy",
+      "slug": "interlune",
+      "notes": "MOVE FROM MANUAL. Lunar helium-3 harvesting hardware; HQ Seattle (also Houston). Found by probing breezy; interlune.space/open-positions lin"
+    },
+    {
+      "name": "Shield AI",
+      "sector": "aero",
+      "ats": "ashby",
+      "slug": "shield",
+      "notes": "AI pilots + drones (V-BAT, X-BAT); Seattle is its 2nd-largest site (194 Seattle postings) and it is acquiring Woodinville radar maker Echody"
+    },
+    {
+      "name": "Fluidstack",
+      "sector": "other",
+      "ats": "ashby",
+      "slug": "fluidstack",
+      "notes": "AI cloud that designs/builds its own GW-scale data centers; ~117 of 244 postings list Seattle as a location (mechanical R&D/robotics, contro"
+    },
+    {
+      "name": "Reliable Robotics",
+      "sector": "aero",
+      "ats": "ashby",
+      "slug": "reliable-robotics",
+      "notes": "Autonomous flight systems for aircraft (HQ Mountain View); opened Seattle-area radar engineering hub in 2026 (8 Seattle RF/FPGA/radar roles "
+    },
+    {
+      "name": "Mast Reforestation",
+      "sector": "other",
+      "ats": "lever",
+      "slug": "MastReforestation",
+      "notes": "Drone-based post-wildfire reforestation (formerly DroneSeed) + seed/nursery ops; HQ Seattle. Lever board exists with 0 openings (slug is cas"
+    },
+    {
+      "name": "Zipline",
+      "sector": "aero",
+      "ats": "greenhouse",
+      "slug": "flyzipline"
+    },
+    {
+      "name": "Zoox",
+      "sector": "other",
+      "ats": "lever",
+      "slug": "zoox"
+    },
+    {
+      "name": "Lumen Bioscience",
+      "sector": "other",
+      "ats": "greenhouse",
+      "slug": "lumenbioscience"
+    },
+    {
+      "name": "Brooks Running",
+      "sector": "other",
+      "ats": "lever",
+      "slug": "brooksrunning"
+    },
+    {
+      "name": "Lyell Immunopharma",
+      "sector": "other",
+      "ats": "greenhouse",
+      "slug": "lyellimmunopharma"
+    },
+    {
+      "name": "Nvidia",
+      "sector": "other",
+      "ats": "workday",
+      "tenant": "nvidia",
+      "wd": "wd5",
+      "site": "NVIDIAExternalCareerSite"
+    },
+    {
+      "name": "Pfizer (Seagen Bothell)",
+      "sector": "other",
+      "ats": "workday",
+      "tenant": "pfizer",
+      "wd": "wd1",
+      "site": "PfizerCareers"
+    },
+    {
+      "name": "Bristol Myers Squibb (Seattle/Bothell)",
+      "sector": "other",
+      "ats": "workday",
+      "tenant": "bristolmyerssquibb",
+      "wd": "wd5",
+      "site": "BMS"
+    },
+    {
+      "name": "Thermo Fisher Scientific (Bothell)",
+      "sector": "other",
+      "ats": "workday",
+      "tenant": "thermofisher",
+      "wd": "wd5",
+      "site": "ThermoFisherCareers"
+    },
+    {
+      "name": "T-Mobile (Bellevue)",
+      "sector": "other",
+      "ats": "workday",
+      "tenant": "tmobile",
+      "wd": "wd1",
+      "site": "External"
+    },
+    {
+      "name": "Danaher (Bothell site)",
+      "sector": "other",
+      "ats": "workday",
+      "tenant": "danaher",
+      "wd": "wd1",
+      "site": "DanaherJobs"
+    },
+    {
+      "name": "AGC Biologics (Bothell)",
+      "sector": "other",
+      "ats": "workday",
+      "tenant": "agcbio",
+      "wd": "wd5",
+      "site": "agcbio_careers"
+    },
+    {
+      "name": "Greenpoint Technologies",
+      "sector": "aero",
+      "ats": "greenhouse",
+      "slug": "greenpointtechnologies"
+    },
+    {
+      "name": "Sana Biotechnology",
+      "sector": "other",
+      "ats": "greenhouse",
+      "slug": "sanabiotech"
+    },
+    {
+      "name": "Siemens Healthineers (Issaquah ultrasound)",
+      "sector": "other",
+      "ats": "workday",
+      "tenant": "onehealthineers",
+      "wd": "wd3",
+      "site": "SHSJB"
+    },
+    {
+      "name": "Qualcomm (Redmond/Seattle)",
+      "sector": "other",
+      "ats": "eightfold",
+      "host": "careers.qualcomm.com",
+      "domain": "qualcomm.com"
+    },
+    {
+      "name": "Kestra Medical Technologies (Kirkland)",
+      "sector": "other",
+      "ats": "greenhouse",
+      "slug": "kestramedicaltechnologiesinc"
+    },
+    {
+      "name": "University of Washington (incl. Applied Physics Lab)",
+      "sector": "other",
+      "ats": "workday",
+      "tenant": "uw",
+      "wd": "wd5",
+      "site": "UWHires"
+    },
+    {
+      "name": "Cascade Engineering Services (Redmond)",
+      "sector": "other",
+      "ats": "workable",
+      "slug": "cascade-engineering-services-1"
+    },
+    {
+      "name": "Starcloud",
+      "ats": "json",
+      "sector": "aero",
+      "url": "https://starcloud.octbr.ai/feeds/starcloud/jobs.json",
+      "careers_url": "https://www.starcloud.com/careers"
+    },
+    {
+      "name": "Wyze",
+      "ats": "gem",
+      "slug": "wyzecam-com",
+      "sector": "other"
+    },
+    {
+      "name": "Senior Aerospace AMT (Arlington)",
+      "sector": "aero",
+      "ats": "smartrecruiters",
+      "slug": "SeniorPlc1"
+    },
+    {
+      "name": "L3Harris (Redmond in-space propulsion, ex-Aerojet)",
+      "ats": "dejobs",
+      "company": "L3Harris",
+      "sector": "aero"
+    },
+    {
+      "name": "Safran (Everett/Marysville/Redmond: Safran Cabin, Electrical & Power, IDD)",
+      "ats": "dejobs",
+      "company": "Safran",
+      "sector": "aero"
+    },
+    {
+      "name": "Alaska Airlines (maintenance & engineering)",
+      "ats": "dejobs",
+      "company": "Alaska Airlines",
+      "sector": "aero"
+    },
+    {
+      "name": "Aviation Technical Services (Everett MRO)",
+      "ats": "dejobs",
+      "company": "Aviation Technical Services",
+      "sector": "aero"
+    },
+    {
+      "name": "Huntington Ingalls / HII Mission Technologies (Bremerton, Keyport)",
+      "ats": "dejobs",
+      "company": "HII",
+      "sector": "aero"
+    },
+    {
+      "name": "ManTech (Bremerton/Silverdale)",
+      "ats": "dejobs",
+      "company": "ManTech",
+      "sector": "aero"
+    },
+    {
+      "name": "SAIC (Oak Harbor/Seattle)",
+      "ats": "dejobs",
+      "company": "SAIC",
+      "sector": "aero"
+    },
+    {
+      "name": "Amentum (JBLM/Oak Harbor)",
+      "ats": "dejobs",
+      "company": "Amentum",
+      "sector": "aero"
+    },
+    {
+      "name": "Panasonic Avionics (Bothell)",
+      "ats": "dejobs",
+      "company": "Panasonic Avionics Corporation",
+      "sector": "aero"
+    },
+    {
+      "name": "Vigor (Seattle shipyard)",
+      "ats": "dejobs",
+      "company": "Vigor, LLC",
+      "sector": "other"
+    },
+    {
+      "name": "Foss Maritime",
+      "ats": "dejobs",
+      "company": "Foss Maritime",
+      "sector": "other"
+    },
+    {
+      "name": "All American Marine (Bellingham boatbuilder)",
+      "ats": "dejobs",
+      "company": "All American Marine",
+      "sector": "other"
+    },
+    {
+      "name": "Puget Sound Naval Shipyard (U.S. Pacific Fleet, Bremerton/Bangor)",
+      "ats": "dejobs",
+      "company": "U.S. Pacific Fleet, Commander in Chief",
+      "sector": "aero"
+    },
+    {
+      "name": "NUWC Division Keyport (NAVSEA)",
+      "ats": "dejobs",
+      "company": "Naval Sea Systems Command",
+      "sector": "aero"
+    },
+    {
+      "name": "NAVFAC Northwest (Silverdale/Bremerton)",
+      "ats": "dejobs",
+      "company": "Naval Facilities Engineering Command",
+      "sector": "other"
+    },
+    {
+      "name": "Delta Marine (Seattle yacht builder)",
+      "ats": "dejobs",
+      "company": "Delta Marine",
+      "sector": "other"
+    },
+    {
+      "name": "Saalex (NUWC Keyport contractor)",
+      "ats": "dejobs",
+      "company": "Saalex Corporation",
+      "sector": "aero"
+    },
+    {
+      "name": "Celestica (Seattle)",
+      "ats": "dejobs",
+      "company": "Celestica",
+      "sector": "other"
+    },
+    {
+      "name": "Army Corps of Engineers, Seattle District",
+      "ats": "dejobs",
+      "company": "U.S. Army Corps of Engineers",
+      "sector": "other"
+    },
+    {
+      "name": "Jacobs (Seattle)",
+      "ats": "dejobs",
+      "company": "Jacobs",
+      "sector": "other"
+    },
+    {
+      "name": "WSP (Seattle)",
+      "ats": "dejobs",
+      "company": "WSP USA",
+      "sector": "other"
+    },
+    {
+      "name": "AECOM (Seattle)",
+      "ats": "dejobs",
+      "company": "AECOM",
+      "sector": "other"
+    },
+    {
+      "name": "Stantec (Seattle)",
+      "ats": "dejobs",
+      "company": "Stantec",
+      "sector": "other"
+    }
+  ],
+  "manual": [
+    {
+      "name": "Electroimpact",
+      "url": "https://www.electroimpact.com/careers"
+    },
+    {
+      "name": "magniX",
+      "url": "https://www.magnix.aero/careers"
+    },
+    {
+      "name": "PACCAR",
+      "url": "https://jobs.paccar.com/go/Engineering-Jobs/2706200"
+    },
+    {
+      "name": "Korry",
+      "url": "https://korryelectronics.workgr8.com/jobs"
+    },
+    {
+      "name": "Kymeta",
+      "url": "https://jobs.jobvite.com/kymetacorp/jobs"
+    },
+    {
+      "name": "Verathon",
+      "url": "https://us-careers-verathon.icims.com/jobs/search"
+    },
+    {
+      "name": "Modern Hydrogen",
+      "url": "https://modernelectron.applytojob.com/apply",
+      "sector": "other",
+      "why": "JazzHR (subdomain still modernelectron), HTML only, no public JSON; currently zero openings. Bothell/Woodinville hydrogen startup"
+    },
+    {
+      "name": "PAE (Seattle office)",
+      "url": "https://www.paycomonline.net/v4/ats/web.php/portal/60E1645CD3118030493CCB4F790AF1C9/career-page",
+      "sector": "other",
+      "why": "Paycom career portal (JS app), no public JSON endpoint found"
+    },
+    {
+      "name": "PCS Structural Solutions",
+      "url": "https://www.paycomonline.net/v4/ats/web.php/jobs?clientkey=772C3279D75E0FFAB33570D71B96316D",
+      "sector": "other",
+      "why": "Paycom, no public JSON endpoint found (Seattle + Tacoma offices)"
+    },
+    {
+      "name": "Glumac (Tetra Tech)",
+      "url": "https://tetratech.referrals.selectminds.com/glumac/",
+      "sector": "other",
+      "why": "Oracle SelectMinds referral site under Tetra Tech, HTML only"
+    },
+    {
+      "name": "Pacific Northwest National Laboratory (Seattle office)",
+      "url": "https://careers-pnnl.icims.com/jobs/search?ss=1",
+      "sector": "other",
+      "why": "iCIMS (careers-pnnl / universityrecruiting-pnnl / postdoc-pnnl.icims.com), HTML only; most jobs are Richland (excluded), filter to Seattle b"
+    },
+    {
+      "name": "Bonneville Power Administration",
+      "url": "https://www.usajobs.gov/search/results/?a=DN00&l=Washington",
+      "sector": "other",
+      "why": "Federal; USAJOBS API needs a registered API key, so manual. Puget Sound sites (e.g. Covington, Olympia) only"
+    },
+    {
+      "name": "McKinstry",
+      "url": "https://phg.tbe.taleo.net/phg02/ats/careers/v2/searchResults?org=MCKINSTRY&cws=41",
+      "sector": "other",
+      "why": "Taleo Business Edition, HTML only, no public JSON"
+    },
+    {
+      "name": "Turner Construction (Seattle)",
+      "url": "https://turnerconstruction.csod.com/ux/ats/careersite/1/home?c=turnerconstruction",
+      "sector": "other",
+      "why": "Cornerstone OnDemand career site, JSON API needs a session token"
+    },
+    {
+      "name": "Mortenson (Seattle office)",
+      "url": "https://www.mortenson.com/seattle/seattle-careers",
+      "sector": "other",
+      "why": "Custom careers pages on mortenson.com, no ATS feed found"
+    },
+    {
+      "name": "Burns & McDonnell (Seattle)",
+      "url": "https://www.burnsmcd.com/careers",
+      "sector": "other",
+      "why": "custom careers search, ATS not identified"
+    },
+    {
+      "name": "Electric Era Technologies",
+      "url": "https://www.electricera.tech/careers",
+      "sector": "other",
+      "why": "Seattle EV fast-charging hardware; jobs posted only as LinkedIn links, no ATS"
+    },
+    {
+      "name": "Fujifilm Sonosite (Bothell)",
+      "url": "https://uscareers-fujifilm.icims.com/jobs/search?ss=1",
+      "sector": "other",
+      "why": "iCIMS, HTML only (Bothell ultrasound hardware engineering)"
+    },
+    {
+      "name": "Herrera Environmental Consultants",
+      "url": "https://www.herrerainc.com/careers/",
+      "sector": "other",
+      "why": "JazzHR, no public JSON"
+    },
+    {
+      "name": "Exotic Metals Forming (Parker, Kent)",
+      "url": "https://www.parker.com/us/en/divisions/exotic-metals-forming-division.html",
+      "sector": "other",
+      "why": "now a Parker Hannifin division (aero); Parker Workday tenant not identified - leave to aero batch"
+    },
+    {
+      "name": "LeoStella",
+      "url": "https://www.leostella.com/careers",
+      "sector": "other",
+      "why": "Smallsat manufacturer in Tukwila (BlackSky-owned); careers page embeds BlackSky greenhouse board, which is already covered. Listed for refer"
+    },
+    {
+      "name": "Pulse Space",
+      "url": "https://pulsespace.com/careers",
+      "sector": "other",
+      "why": "Space laser power-beaming satellites (Space Force $40M contract); Seattle/Bellevue. Careers SPA (Replit build) with jobs baked into JS; also"
+    },
+    {
+      "name": "Radian Aerospace",
+      "url": "https://www.radianaerospace.com",
+      "sector": "other",
+      "why": "Reusable single-stage orbital spaceplane; Renton/Bothell. /careers 404s now; no ATS found (jobs historically via spacetalent/LinkedIn). Foun"
+    },
+    {
+      "name": "Sophia Space",
+      "url": "https://sophia.space",
+      "sector": "other",
+      "why": "Orbital compute / space data-center tiles; Seattle (raised $3.5M pre-seed 2025). No careers page or ATS found. Found via GeekWire space fund"
+    },
+    {
+      "name": "Aquagga",
+      "url": "https://www.aquagga.com/about-us/careers",
+      "sector": "other",
+      "why": "PFAS destruction (supercritical water oxidation) hardware; Tacoma. Static careers page. Found via GeekWire Uncommon Thinkers 2025."
+    },
+    {
+      "name": "Membrion",
+      "url": "https://membrion.com/careers/",
+      "sector": "other",
+      "why": "Ceramic ion-exchange membranes for industrial wastewater/batteries; Seattle. Static careers page. Found from prior knowledge (Seattle climat"
+    },
+    {
+      "name": "Oscilla Power",
+      "url": "https://www.oscillapower.com/opicareers",
+      "sector": "other",
+      "why": "Wave-energy converters (Triton); Seattle. Wix careers page. Found from prior knowledge, confirmed site."
+    },
+    {
+      "name": "Jetoptera",
+      "url": "https://www.jetoptera.com/careers/",
+      "sector": "other",
+      "why": "Fluidic propulsion / VTOL aircraft; Edmonds. WordPress careers posts (e.g. /careers/engineer-senior/). Named in task; verified WA."
+    },
+    {
+      "name": "Pure Watercraft",
+      "url": "https://www.pureoutboards.com/careers/",
+      "sector": "other",
+      "why": "Electric outboard motors/boats; Seattle. WordPress careers page, no ATS. Named in task; verified Seattle."
+    },
+    {
+      "name": "Zin Boats",
+      "url": "https://www.zinboats.com",
+      "sector": "other",
+      "why": "Electric performance boats; Seattle. No careers page (/careers 404). Named in task; GeekWire tag."
+    },
+    {
+      "name": "Picnic",
+      "url": "https://www.picnicworks.com/careers.html",
+      "sector": "other",
+      "why": "Pizza-assembly food robots; Seattle. Static careers page. Named in task."
+    },
+    {
+      "name": "Juno Propulsion",
+      "url": "https://www.junopropulsion.com",
+      "sector": "other",
+      "why": "Rotating detonation rocket engines; Seattle. No ATS found. Found via Alliance Velocity directory."
+    },
+    {
+      "name": "New Frontier Aerospace",
+      "url": "https://www.newfrontieraerospace.com",
+      "sector": "other",
+      "why": "3D-printed hypersonic-capable rocket engine (Mjolnir) + orbital transfer vehicle; Kent. Site did not respond to curl; no ATS found. Found vi"
+    },
+    {
+      "name": "Tethers Unlimited (Amergent Techs)",
+      "url": "https://www.tethers.com/careers",
+      "sector": "other",
+      "why": "Spacecraft components/in-space mfg; Bothell (now Amergent Techs). Site timed out from here; check manually. Named in task."
+    },
+    {
+      "name": "Lassen Peak",
+      "url": "https://www.lassenpeak.com/careers/",
+      "sector": "other",
+      "why": "Handheld radar weapons-detection scanner; Bellevue. Static careers page. Found via GeekWire 2026 radar story."
+    },
+    {
+      "name": "OneCourt",
+      "url": "https://www.onecourt.io/careers",
+      "sector": "other",
+      "why": "Tactile haptic tablets for blind sports fans; Seattle (hardware). Static careers page. Found via GeekWire 2026 search."
+    },
+    {
+      "name": "WiBotic",
+      "url": "https://www.wibotic.com/careers/",
+      "sector": "other",
+      "why": "Wireless charging for drones/robots (incl. lunar); Seattle. Static careers page. Found via Alliance Velocity / WRF portfolio."
+    },
+    {
+      "name": "Olis Robotics",
+      "url": "https://olisrobotics.com/careers",
+      "sector": "other",
+      "why": "Remote-control/AI software+hardware for industrial and subsea robot arms; Seattle. Static careers page. Found via WRF portfolio list."
+    },
+    {
+      "name": "EchoNous",
+      "url": "https://echonous.com/about/careers/",
+      "sector": "other",
+      "why": "Handheld AI ultrasound devices; Redmond (medical-device hardware). Careers page, no supported ATS found. Found from prior knowledge."
+    },
+    {
+      "name": "Emerald Battery Labs",
+      "url": "https://www.emeraldbatterylabs.com",
+      "sector": "other",
+      "why": "Sodium-ion battery cells (UW spinout, uses WA Clean Energy Testbeds pouch line); Seattle. No careers page. Found via GeekWire 2026 battery s"
+    },
+    {
+      "name": "Hyviva",
+      "url": "https://www.hyviva.com",
+      "sector": "other",
+      "why": "Hydrogen-based home energy storage modules; Seattle area. No careers page. Found via GeekWire Dec 2025 story."
+    },
+    {
+      "name": "TriMagnetix",
+      "url": "https://trimagnetix.com",
+      "sector": "other",
+      "why": "Magnetic/pulse-based low-energy chips for space and data centers; Seattle (2 people). No careers page. Found via GeekWire Oct 2026."
+    },
+    {
+      "name": "Chiplytics",
+      "url": "https://www.chiplytics.com",
+      "sector": "other",
+      "why": "AI+robotic counterfeit/defective chip inspection; Seattle R&D. No careers page. Found via GeekWire 2026 funding."
+    },
+    {
+      "name": "GHKN Engineering",
+      "url": "https://www.ghkn.com",
+      "sector": "other",
+      "why": "Rocket engine design/test engineering services; Kirkland. No careers page found. Found via Alliance Velocity directory."
+    },
+    {
+      "name": "Off Planet Research",
+      "url": "https://www.offplanetresearch.com",
+      "sector": "other",
+      "why": "Lunar/Mars regolith simulants and test services; Everett. No careers page. Found via Alliance Velocity directory."
+    },
+    {
+      "name": "Google (Kirkland/Seattle)",
+      "url": "https://www.google.com/about/careers/applications/jobs/results/?location=Kirkland%2C%20WA%2C%20USA&location=Seattle%2C%20WA%2C%20USA",
+      "sector": "other",
+      "why": "No public JSON feed; data embedded in AF_initDataCallback. Some Devices & Services hardware roles in Kirkland."
+    },
+    {
+      "name": "Meta Reality Labs (Redmond)",
+      "url": "https://www.metacareers.com/jobs?offices[0]=Redmond%2C%20WA",
+      "sector": "other",
+      "why": "GraphQL-only careers site, no public feed. Reality Labs hardware (optics, display, silicon, mechanical) in Redmond."
+    },
+    {
+      "name": "Olympus (Redmond, formerly Spiration)",
+      "url": "https://careers.olympusamerica.com/search/?q=&locationsearch=Redmond",
+      "sector": "other",
+      "why": "SuccessFactors RMK; only an RSS feed capped at 20 items (https://careers.olympusamerica.com/services/rss/job/?locale=en_US), keyword/locatio"
+    },
+    {
+      "name": "Nautilus Biotechnology (Seattle)",
+      "url": "https://www.nautilus.bio/careers/",
+      "sector": "other",
+      "why": "Careers page blocks curl (403); uses Ashby per page text but slug not found (tried nautilus, nautilusbio, nautilus-biotechnology, nautilusbi"
+    },
+    {
+      "name": "Valve (Bellevue)",
+      "url": "https://www.valvesoftware.com/en/jobs",
+      "sector": "other",
+      "why": "Custom static jobs page (job_id links), no feed. Hardware engineering (Steam Deck/Index) in Bellevue."
+    },
+    {
+      "name": "Spacelabs Healthcare (Snoqualmie)",
+      "url": "https://apply-jobs-osi-systems.icims.com/jobs/search?ss=1&searchLocation=12781-12827-Snoqualmie",
+      "sector": "other",
+      "why": "Parent OSI Systems uses iCIMS, no JSON. Snoqualmie HQ hires electrical, manufacturing, quality engineers and interns (patient monitors)."
+    },
+    {
+      "name": "First Mode (Seattle)",
+      "url": "https://firstmode.com/careers/",
+      "sector": "other",
+      "why": "Careers page blocks curl (403); ATS not identified (greenhouse/lever/ashby slugs firstmode, first-mode, firstmodeinc all missed). Heavy-vehi"
+    },
+    {
+      "name": "ZeroAvia (Everett)",
+      "url": "https://careers.zeroavia.com/search-jobs/",
+      "sector": "aero",
+      "why": "Custom WordPress careers site (Cloudflare 202 to curl). Workable account 'zeroavia' exists but only lists UK (Kemble) jobs; US/Everett jobs "
+    },
+    {
+      "name": "Korry Electronics (Everett, TransDigm)",
+      "url": "https://korryelectronics.workgr8.com/jobs",
+      "sector": "aero",
+      "why": "workgr8 board, no JSON API; not on DirectEmployers. Still manual."
+    },
+    {
+      "name": "Nichols Brothers Boat Builders (Freeland, Whidbey)",
+      "url": "https://www.paycomonline.net/v4/ats/web.php/jobs?clientkey=C21BB6292E7365E4FD1E8C86E90AAD40",
+      "sector": "aero",
+      "why": "Paycom, no public JSON."
+    },
+    {
+      "name": "Glosten (naval architects, Seattle)",
+      "url": "https://glosten.com/careers/",
+      "sector": "aero",
+      "why": "Site timed out to curl and the ATS could not be identified; not on DirectEmployers."
+    },
+    {
+      "name": "Crowley / Jensen Maritime (Seattle naval architecture)",
+      "url": "https://cacareers-crowley.icims.com",
+      "sector": "aero",
+      "why": "iCIMS, no WA results on DirectEmployers."
+    }
+  ],
+  "notify_board_problems": true,
+  "workday_terms": [
+    "engineer",
+    "engineering intern"
+  ],
+  "amazon_terms": [
+    "engineer intern",
+    "mechanical engineer",
+    "manufacturing engineer",
+    "test engineer",
+    "hardware engineer",
+    "electrical engineer",
+    "systems engineer",
+    "design engineer",
+    "propulsion engineer",
+    "process engineer",
+    "quality engineer",
+    "reliability engineer",
+    "structures engineer",
+    "thermal engineer",
+    "controls engineer",
+    "robotics engineer",
+    "industrial engineer",
+    "materials engineer"
+  ]
+}

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Job Watch</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Job Watch">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15191e" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--bg:#fff;--card:#fff;--fg:#1d2733;--muted:#5f6b7a;--line:#e3e7ec;--link:#1f5fbf;--chip:#eef1f5;--chipOn:#1f3a5f;--chipOnFg:#fff;--new:#d9480f;--tag:#e8f0fb;--star:#e0a100}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15191e;--card:#1b2026;--fg:#e6e9ed;--muted:#9aa5b1;--line:#2a3038;--link:#7fb0ff;--chip:#252b33;--chipOn:#7fb0ff;--chipOnFg:#0d1117;--new:#ff8a50;--tag:#22324a;--star:#f5c542}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+html,body{overflow-x:hidden}
+body{background:var(--bg);color:var(--fg);font:16px/1.4 -apple-system,system-ui,sans-serif;margin:0}
+header{position:sticky;top:0;z-index:2;background:var(--bg);padding:calc(env(safe-area-inset-top) + 10px) 16px 8px;border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+h1{font-size:26px;margin:0}
+.upd{color:var(--muted);font-size:13px}
+input[type=search]{width:100%;margin:10px 0 8px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg);font-size:16px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:0;border-radius:16px;padding:6px 12px;background:var(--chip);color:var(--fg);font-size:14px;font-weight:500}
+.chip.on{background:var(--chipOn);color:var(--chipOnFg)}
+main{max-width:760px;margin:0 auto;padding:0 16px calc(env(safe-area-inset-bottom) + 32px)}
+h2{font-size:18px;margin:22px 0 2px}
+h2 .n,.n{color:var(--muted);font-weight:400;font-size:14px}
+ul{list-style:none;margin:0;padding:0}
+li{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+li .body{flex:1;min-width:0}
+li a{color:var(--link);text-decoration:none;font-weight:600}
+.meta{color:var(--muted);font-size:14px;margin-top:2px}
+.tag{display:inline-block;background:var(--tag);font-size:12px;padding:1px 7px;border-radius:8px;margin-left:4px;vertical-align:1px;color:var(--fg);font-weight:500}
+.tag.new{background:var(--new);color:#fff}
+.sec{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.btns{display:flex;gap:2px;flex:none}
+.icon{border:0;background:none;color:var(--muted);font-size:20px;line-height:1;padding:4px 6px;min-width:36px;min-height:36px}
+.icon.on{color:var(--star)}
+.empty{color:var(--muted);padding:24px 0}
+.warn{color:#b5651d;font-size:14px;margin-top:14px}
+footer{margin-top:28px;font-size:13px;color:var(--muted)}
+footer a{color:var(--link)}
+.more{display:block;width:100%;margin:14px 0;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg);font-size:15px}
+</style>
+</head>
+<body>
+<header>
+  <div class="top"><h1>Job Watch</h1><span class="upd" id="upd">Loading…</span></div>
+  <input type="search" id="q" placeholder="Search title, company, city" autocomplete="off">
+  <div class="chips" id="chips"></div>
+</header>
+<main id="list"><p class="empty">Loading…</p></main>
+<script>
+const SECT = { energy: 'Energy', aero: 'Aero & space', other: 'Other' };
+const FILTERS = [
+  ['new', 'New'], ['all', 'All open'], ['energy', 'Energy'], ['aero', 'Aero & space'],
+  ['intern', 'Internships'], ['other', 'Other'], ['saved', 'Saved'], ['companies', 'Companies'], ['hidden', 'Hidden'],
+];
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('jw.' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('jw.' + k, JSON.stringify(v)); } catch (e) {} },
+};
+let data = null;
+let filter = store.get('filter', 'new');
+let saved = new Set(store.get('saved', []));
+let hidden = new Set(store.get('hidden', []));
+let limit = 150;
+// "new since last visit": anything first seen after the day you last opened the app
+const lastVisit = store.get('lastVisitDay', null);
+
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const dayLabel = (d) => {
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+  const y = new Date(Date.now() - 864e5).toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+  if (d === today) return 'Today';
+  if (d === y) return 'Yesterday';
+  return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+};
+const rank = { energy: 0, aero: 1, other: 2 };
+
+function renderChips() {
+  document.getElementById('chips').innerHTML = FILTERS.map(([k, l]) => {
+    let n = '';
+    if (data) n = ' ' + (k === 'companies' ? data.companies.length + data.pages.length : pick(k, '').length);
+    return `<button class="chip${k === filter ? ' on' : ''}" data-f="${k}">${l}<span class="n">${n}</span></button>`;
+  }).join('');
+}
+
+function pick(f, q) {
+  const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+  return data.jobs.filter((j) => {
+    if (f === 'hidden') { if (!hidden.has(j.id)) return false; }
+    else if (hidden.has(j.id)) return false;
+    if (f === 'new' && j.first_seen === data.baseline_date) return false;
+    if (f === 'saved' && !saved.has(j.id)) return false;
+    if (f === 'intern' && !j.intern) return false;
+    if (SECT[f] && j.sector !== f) return false;
+    const hay = (j.title + ' ' + j.company + ' ' + j.location).toLowerCase();
+    return words.every((w) => hay.includes(w));
+  });
+}
+
+function row(j) {
+  const fresh = lastVisit && j.first_seen > lastVisit && j.first_seen !== data.baseline_date;
+  return `<li data-id="${esc(j.id)}"><div class="body">
+    <a href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.title)}</a>${j.intern ? '<span class="tag">Intern</span>' : ''}${fresh ? '<span class="tag new">New</span>' : ''}
+    <div class="meta">${esc(j.company)} · ${esc(j.location || 'location not listed')}</div>
+    <div class="sec">${SECT[j.sector] || ''}</div></div>
+    <div class="btns"><button class="icon${saved.has(j.id) ? ' on' : ''}" data-act="save" aria-label="Save">${saved.has(j.id) ? '★' : '☆'}</button>
+    <button class="icon" data-act="hide" aria-label="${hidden.has(j.id) ? 'Unhide' : 'Hide'}">${hidden.has(j.id) ? '↺' : '✕'}</button></div></li>`;
+}
+
+function pageChanges() {
+  const cutoff = new Date(Date.now() - 14 * 864e5).toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+  return data.pages.filter((p) => p.changed && p.changed >= cutoff).sort((a, b) => b.changed.localeCompare(a.changed));
+}
+
+function renderCompanies(q) {
+  const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+  const ok = (c) => words.every((w) => (c.name + ' ' + (c.note || '')).toLowerCase().includes(w));
+  let h = '';
+  for (const sec of ['energy', 'aero', 'other']) {
+    const cos = data.companies.filter((c) => c.sector === sec && ok(c)).sort((a, b) => (b.open - a.open) || a.name.localeCompare(b.name));
+    const pgs = data.pages.filter((p) => p.sector === sec && ok(p)).sort((a, b) => a.name.localeCompare(b.name));
+    if (!cos.length && !pgs.length) continue;
+    h += `<h2>${SECT[sec]} <span class="n">${cos.length + pgs.length}</span></h2><ul>`;
+    h += cos.map((c) => `<li><div class="body"><a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.name)}</a>
+      <div class="meta">${c.open ? c.open + ' open engineering role' + (c.open > 1 ? 's' : '') : 'Nothing open right now, watching'}${c.note ? ' · ' + esc(c.note) : ''}</div></div></li>`).join('');
+    h += pgs.map((p) => `<li><div class="body"><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.name)}</a>${p.changed ? '<span class="tag new">Page changed ' + dayLabel(p.changed) + '</span>' : ''}
+      <div class="meta">Careers page watched for changes${p.note ? ' · ' + esc(p.note) : ''}</div></div></li>`).join('');
+    h += '</ul>';
+  }
+  return h || '<p class="empty">No matches.</p>';
+}
+
+function render() {
+  renderChips();
+  const q = document.getElementById('q').value;
+  if (filter === 'companies') {
+    document.getElementById('list').innerHTML = renderCompanies(q) + footer();
+    return;
+  }
+  const jobs = pick(filter, q).sort((a, b) => (b.first_seen.localeCompare(a.first_seen)) || (rank[a.sector] - rank[b.sector]) || (b.intern - a.intern) || a.company.localeCompare(b.company));
+  const el = document.getElementById('list');
+  let html = '';
+  if (filter === 'new' && !q) {
+    const pc = pageChanges();
+    if (pc.length) html += `<h2>Careers pages that changed <span class="n">${pc.length}</span></h2><p class="meta">These companies don't use a job board we can read. Their careers page changed, so something may have been posted.</p><ul>` +
+      pc.map((p) => `<li><div class="body"><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.name)}</a><span class="tag new">${dayLabel(p.changed)}</span>
+      <div class="meta">${esc((p.added || []).slice(0, 3).join(' · ').slice(0, 160))}</div></div></li>`).join('') + '</ul>';
+  }
+  if (!jobs.length) {
+    html = `<p class="empty">${filter === 'new' && !q ? 'Nothing new yet. Tracking started ' + new Date(data.baseline_date + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) + '. Anything posted after that shows up here, newest first. Tap "All open" to see everything open now.' : 'Nothing here.'}</p>`;
+  } else {
+    let day = null, shown = 0;
+    for (const j of jobs) {
+      if (shown >= limit) break;
+      const d = j.first_seen === data.baseline_date ? 'base' : j.first_seen;
+      if (d !== day) {
+        if (day !== null) html += '</ul>';
+        const n = jobs.filter((x) => (x.first_seen === data.baseline_date ? 'base' : x.first_seen) === d).length;
+        html += `<h2>${d === 'base' ? 'Open when tracking started' : 'New ' + dayLabel(d)} <span class="n">${n}</span></h2><ul>`;
+        day = d;
+      }
+      html += row(j); shown++;
+    }
+    html += '</ul>';
+    if (jobs.length > limit) html += `<button class="more" id="more">Show ${Math.min(150, jobs.length - limit)} more (${jobs.length - limit} left)</button>`;
+  }
+  if (data.failed && data.failed.length) html += `<p class="warn">Couldn't check last time: ${esc(data.failed.join(', '))}.</p>`;
+  el.innerHTML = html + footer();
+}
+
+function footer() {
+  return `<footer><p>Watching ${data.companies.length + data.pages.length} Seattle-area companies twice a day: ${data.companies.length} job boards plus ${data.pages.length} careers pages checked for changes. Closed postings drop off. Saved and hidden roles stay on this phone.</p></footer>`;
+}
+
+document.getElementById('chips').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-f]'); if (!b) return;
+  filter = b.dataset.f; store.set('filter', filter); limit = 150; render(); window.scrollTo(0, 0);
+});
+document.getElementById('q').addEventListener('input', () => { limit = 150; render(); });
+document.getElementById('list').addEventListener('click', (e) => {
+  if (e.target.id === 'more') { limit += 150; render(); return; }
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const id = b.closest('li').dataset.id;
+  const set = b.dataset.act === 'save' ? saved : hidden;
+  set.has(id) ? set.delete(id) : set.add(id);
+  store.set('saved', [...saved]); store.set('hidden', [...hidden]);
+  render();
+});
+
+async function load() {
+  try {
+    const r = await fetch('jobs.json?t=' + Date.now(), { cache: 'no-store' });
+    data = await r.json();
+    const u = new Date(data.updated);
+    document.getElementById('upd').textContent = 'Updated ' + u.toLocaleString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+    render();
+    store.set('lastVisitDay', new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' }));
+  } catch (e) {
+    document.getElementById('upd').textContent = 'Offline';
+    document.getElementById('list').innerHTML = '<p class="empty">Couldn\'t load the job list. Check your connection and reopen.</p>';
+  }
+}
+renderChips();
+load();
+// refresh when you come back to the app
+document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+</script>
+</body>
+</html>
