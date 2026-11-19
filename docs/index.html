@@ -174,7 +174,7 @@ function render() {
     html += '</ul>';
     if (jobs.length > limit) html += `<button class="more" id="more">Show ${Math.min(150, jobs.length - limit)} more (${jobs.length - limit} left)</button>`;
   }
-  if (data.failed && data.failed.length) html += `<p class="warn">Couldn't check last time: ${esc(data.failed.join(', '))}.</p>`;
+  if (data.failed && data.failed.length) html += `<details class="warn"><summary>${data.failed.length} board${data.failed.length > 1 ? 's' : ''} couldn't be checked last time</summary>${esc(data.failed.map((n) => n.replace(/\s*\(.*\)/, '')).join(', '))}. Their roles stay listed until the next good check.</details>`;
   el.innerHTML = html + footer();
 }
 
