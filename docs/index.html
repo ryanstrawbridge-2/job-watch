@@ -61,7 +61,7 @@ footer a{color:var(--link)}
 const SECT = { energy: 'Energy', aero: 'Aero & space', other: 'Other' };
 const FILTERS = [
   ['new', 'New'], ['all', 'All open'], ['energy', 'Energy'], ['aero', 'Aero & space'],
-  ['intern', 'Internships'], ['other', 'Other'], ['saved', 'Saved'], ['companies', 'Companies'], ['hidden', 'Hidden'],
+  ['intern', 'Internships'], ['other', 'Other'], ['news', 'News'], ['saved', 'Saved'], ['companies', 'Companies'], ['hidden', 'Hidden'],
 ];
 const store = {
   get(k, d) { try { const v = localStorage.getItem('jw.' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
@@ -88,7 +88,7 @@ const rank = { energy: 0, aero: 1, other: 2 };
 function renderChips() {
   document.getElementById('chips').innerHTML = FILTERS.map(([k, l]) => {
     let n = '';
-    if (data) n = ' ' + (k === 'companies' ? data.companies.length + data.pages.length : pick(k, '').length);
+    if (data) n = ' ' + (k === 'companies' ? data.companies.length + data.pages.length : k === 'news' ? (data.news || []).length : pick(k, '').length);
     return `<button class="chip${k === filter ? ' on' : ''}" data-f="${k}">${l}<span class="n">${n}</span></button>`;
   }).join('');
 }
@@ -111,7 +111,7 @@ function row(j) {
   const fresh = lastVisit && j.first_seen > lastVisit && j.first_seen !== data.baseline_date;
   return `<li data-id="${esc(j.id)}"><div class="body">
     <a href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.title)}</a>${j.intern ? '<span class="tag">Intern</span>' : ''}${fresh ? '<span class="tag new">New</span>' : ''}
-    <div class="meta">${esc(j.company)} · ${esc(j.location || 'location not listed')}</div>
+    <div class="meta">${esc(j.company)} · ${esc(j.location || 'location not listed')}${j.source === 'page' ? ' · from their careers page' : ''}</div>
     <div class="sec">${SECT[j.sector] || ''}</div></div>
     <div class="btns"><button class="icon${saved.has(j.id) ? ' on' : ''}" data-act="save" aria-label="Save">${saved.has(j.id) ? '★' : '☆'}</button>
     <button class="icon" data-act="hide" aria-label="${hidden.has(j.id) ? 'Unhide' : 'Hide'}">${hidden.has(j.id) ? '↺' : '✕'}</button></div></li>`;
@@ -120,6 +120,23 @@ function row(j) {
 function pageChanges() {
   const cutoff = new Date(Date.now() - 14 * 864e5).toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
   return data.pages.filter((p) => p.changed && p.changed >= cutoff).sort((a, b) => b.changed.localeCompare(a.changed));
+}
+
+function renderNews(q) {
+  const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+  const items = (data.news || []).filter((n) => words.every((w) => (n.title + ' ' + n.source).toLowerCase().includes(w)));
+  if (!items.length) return '<p class="empty">No news yet.</p>';
+  const watched = [...data.companies, ...data.pages].map((c) => c.name.split(' (')[0]).filter((x) => x.length > 3);
+  let h = '<p class="meta" style="margin-top:14px">Seattle-area hardware, space and energy companies raising money or opening sites. A funding round usually means hiring in the next few weeks, often before jobs are posted. Tell Claude to watch any company you see here that isn\'t tracked yet.</p>';
+  let day = null;
+  for (const n of items) {
+    if (n.first_seen !== day) { if (day) h += '</ul>'; h += `<h2>${n.first_seen === data.baseline_date ? 'Recent' : 'Found ' + dayLabel(n.first_seen)}</h2><ul>`; day = n.first_seen; }
+    const w = watched.find((c) => n.title.toLowerCase().includes(c.toLowerCase()));
+    const when = n.published ? new Date(n.published).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+    h += `<li><div class="body"><a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title)}</a>${w ? '<span class="tag">Watching</span>' : ''}
+      <div class="meta">${esc(n.source)}${when ? ' · ' + when : ''}</div></div></li>`;
+  }
+  return h + '</ul>';
 }
 
 function renderCompanies(q) {
@@ -143,6 +160,10 @@ function renderCompanies(q) {
 function render() {
   renderChips();
   const q = document.getElementById('q').value;
+  if (filter === 'news') {
+    document.getElementById('list').innerHTML = renderNews(q) + footer();
+    return;
+  }
   if (filter === 'companies') {
     document.getElementById('list').innerHTML = renderCompanies(q) + footer();
     return;

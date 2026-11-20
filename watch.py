@@ -9,7 +9,7 @@ Runs on GitHub Actions twice a day (.github/workflows/watch.yml).
 
 Companies and filters live in companies.json. History lives in data/seen.json.
 """
-import json, os, re, subprocess, sys, time, urllib.parse
+import html, json, os, re, subprocess, sys, time, urllib.parse
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor
 from zoneinfo import ZoneInfo
@@ -252,24 +252,191 @@ def log(msg):
 
 
 # ---------- careers pages with no feed ----------
-def page_text(url):
-    r = subprocess.run(['curl', '-s', '-f', '-L', '-m', '40', '-A', 'Mozilla/5.0 (Macintosh)', url], capture_output=True, text=True)
-    if r.returncode != 0:
-        raise RuntimeError(f'fetch failed (curl exit {r.returncode})')
-    t = re.sub(r'(?is)<(script|style|noscript|svg)[^>]*>.*?</\1>', ' ', r.stdout)
+CHROME = next((p for p in ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome',
+                           '/usr/bin/google-chrome-stable', '/usr/bin/chromium-browser'] if os.path.exists(p)), None)
+JOBLINK = re.compile(r'/(careers?|jobs?|positions?|openings?|opportunities|join-us|roles?)/[^/?#]*[a-z][^/?#]{3,}|'
+                     r'greenhouse\.io/.+/jobs/\d|lever\.co/[^/]+/[0-9a-f-]{20,}|ashbyhq\.com/[^/]+/[0-9a-f-]{20,}|'
+                     r'workable\.com/.+/j/|bamboohr\.com/careers/\d|paylocity\.com/.+/Details/|breezy\.hr/p/|'
+                     r'rippling\.com/.+/jobs/|jobvite\.com/.+/job/|icims\.com/jobs/\d|recruitee\.com/o/|myworkdayjobs\.com/.+/job/', re.I)
+
+
+def get_html(url, render=False):
+    if not render:
+        r = subprocess.run(['curl', '-s', '-f', '-L', '-m', '40', '-A', 'Mozilla/5.0 (Macintosh)', url], capture_output=True, text=True)
+        if r.returncode == 0 and len(r.stdout) > 500:
+            return r.stdout
+    if not CHROME:  # page needs a real browser (scripts or a picky server) and none is installed
+        raise RuntimeError('fetch failed and no browser available')
+    r = subprocess.run([CHROME, '--headless=new', '--disable-gpu', '--no-sandbox', '--virtual-time-budget=15000',
+                        '--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36',
+                        '--dump-dom', url], capture_output=True, text=True, timeout=90)
+    if r.returncode != 0 or len(r.stdout) < 500:
+        raise RuntimeError('browser fetch failed')
+    return r.stdout
+
+
+def page_text(html_src):
+    t = re.sub(r'(?is)<(script|style|noscript|svg)[^>]*>.*?</\1>', ' ', html_src)
     t = re.sub(r'<[^>]+>', ' ', t)
     t = re.sub(r'&[a-z#0-9]+;', ' ', t)
     lines = [' '.join(x.split()) for x in re.split(r'\s{2,}', t)]
     return '\n'.join(x for x in lines if 2 < len(x) < 200)
 
 
+def ld_jobs(html_src, base):
+    """JobPosting data that sites embed for Google's job search."""
+    out = []
+    for blob in re.findall(r'(?is)<script[^>]+application/ld\+json[^>]*>(.*?)</script>', html_src):
+        try:
+            d = json.loads(blob.strip())
+        except Exception:
+            continue
+        stack = d if isinstance(d, list) else [d]
+        while stack:
+            x = stack.pop()
+            if isinstance(x, list):
+                stack += x
+                continue
+            if not isinstance(x, dict):
+                continue
+            stack += [v for v in x.values() if isinstance(v, (list, dict))]
+            if x.get('@type') == 'JobPosting' and x.get('title'):
+                loc = x.get('jobLocation') or {}
+                loc = loc[0] if isinstance(loc, list) and loc else loc
+                addr = (loc.get('address') if isinstance(loc, dict) else {}) or {}
+                where = ', '.join(filter(None, [addr.get('addressLocality'), addr.get('addressRegion')])) if isinstance(addr, dict) else ''
+                out.append((x.get('url') or base, html.unescape(x['title']), where))
+    return out
+
+
+def link_jobs(html_src, base):
+    """Links that look like individual job postings, with their link text."""
+    out = []
+    for href, text in re.findall(r'(?is)<a[^>]+href="([^"#]+)"[^>]*>(.*?)</a>', html_src):
+        href = urllib.parse.urljoin(base, html.unescape(href))
+        title = ' '.join(html.unescape(re.sub(r'<[^>]+>', ' ', text)).split())
+        if not JOBLINK.search(href) or len(title) < 4 or len(title) > 120:
+            continue
+        if re.fullmatch(r'(?i)(apply|apply now|learn more|view|details|see (all|more|open).*|careers?|jobs?|open (roles|positions)|view (all )?(jobs|openings|positions))', title):
+            slug = re.sub(r'[-_]+', ' ', href.rstrip('/').rsplit('/', 1)[-1])
+            title = slug if re.search(r'[a-z]{3}', slug) and not slug.isdigit() else title
+        out.append((href, title, ''))
+    return out
+
+
+def sitemap_jobs(url):
+    """New job pages often appear in a site's sitemap before anywhere else."""
+    root = '{0.scheme}://{0.netloc}'.format(urllib.parse.urlparse(url))
+    r = subprocess.run(['curl', '-s', '-f', '-L', '-m', '30', '-A', 'Mozilla/5.0 (Macintosh)', root + '/sitemap.xml'], capture_output=True, text=True)
+    if r.returncode != 0:
+        return []
+    locs = re.findall(r'<loc>\s*([^<\s]+)\s*</loc>', r.stdout)
+    if any(l.endswith('.xml') for l in locs) and len(locs) < 40:  # sitemap index: look one level down for job sitemaps
+        for sub in [l for l in locs if re.search(r'job|career|position', l, re.I)][:3]:
+            rr = subprocess.run(['curl', '-s', '-f', '-L', '-m', '30', sub], capture_output=True, text=True)
+            locs += re.findall(r'<loc>\s*([^<\s]+)\s*</loc>', rr.stdout)
+    out = []
+    for l in locs:
+        if JOBLINK.search(l) and not l.endswith('.xml'):
+            slug = re.sub(r'[-_]+', ' ', l.rstrip('/').rsplit('/', 1)[-1])
+            if re.search(r'[a-z]{4}', slug):
+                out.append((l, slug, ''))
+    return out[:300]
+
+
+NONLOCAL = re.compile(r'\b(UK|United Kingdom|England|Kemble|London|Germany|France|India|Canada|Mexico|Japan|China|Remote)\b|, (TX|CA|CO|FL|AL|AZ|OH|MI|MO|TN|PA|NY|VA|NC|GA|IL|OR|UT|SC|IN|KY)\b')
+
+
+def page_job_ok(title):
+    t = title.lower()
+    if NONLOCAL.search(title):  # careers pages often list other offices' jobs
+        return False
+    return not F['exclude'].search(title) and bool(F['engineer'].search(t) or F['intern'].search(t) or F['field'].search(t))
+
+
 def check_page(m):
     import hashlib
     try:
-        text = page_text(m['url'])
-        return m['name'], hashlib.sha1(text.encode()).hexdigest(), text, None
+        src = get_html(m['url'], m.get('render', False))
+        found = ld_jobs(src, m['url']) + link_jobs(src, m['url'])
+        if m.get('jobs') is False:  # page lists jobs from every office with no location: just watch it for changes
+            found = []
+        elif not found and not m.get('render') and CHROME:  # maybe the jobs are drawn by scripts
+            try:
+                src2 = get_html(m['url'], render=True)
+                found = ld_jobs(src2, m['url']) + link_jobs(src2, m['url'])
+                src = src2 if found else src
+            except Exception:
+                pass
+        found += sitemap_jobs(m['url'])
+        jobs, seen = [], set()
+        for u, t, loc in found:
+            key = u.split('?')[0].rstrip('/')
+            if key in seen or not page_job_ok(t):
+                continue
+            seen.add(key)
+            t = re.sub(r'\s*(Read more|Learn more|Apply( now)?)\s*$', '', t, flags=re.I)
+            jobs.append(dict(id=f"{m['name']}|{key}", company=m['name'], sector=m.get('sector', 'other'),
+                             title=t[:1].upper() + t[1:], location=loc or 'See posting', url=u, source='page'))
+        text = page_text(src)
+        return m['name'], hashlib.sha1(text.encode()).hexdigest(), text, None, jobs
     except Exception as e:
-        return m['name'], None, '', str(e)
+        return m['name'], None, '', str(e), []
+
+
+# ---------- Hacker News "Who is hiring?" ----------
+HW = re.compile(r'mechanical|hardware|aerospace|\bspace\b|satellite|rocket|propulsion|fusion|nuclear|fission|reactor|battery|batteries|'
+                r'energy|robot|manufactur|drone|\buav\b|defense|electrical engineer|test engineer|climate|grid|solar|hydrogen|semiconductor', re.I)
+
+
+def hn_jobs():
+    d = curl('https://hn.algolia.com/api/v1/search_by_date?tags=story,author_whoishiring&hitsPerPage=10')
+    story = next((h for h in d['hits'] if h['title'].lower().startswith('ask hn: who is hiring')), None)
+    if not story:
+        return []
+    item = curl(f"https://hn.algolia.com/api/v1/items/{story['objectID']}", timeout=90)
+    out = []
+    for ch in item.get('children') or []:
+        raw = ch.get('text') or ''
+        txt = html.unescape(re.sub(r'<[^>]+>', ' ', raw.replace('<p>', '\n')))
+        first = ' '.join(txt.strip().split('\n')[0].split())
+        if not first or not F['local'].search(txt[:600]) or not HW.search(txt):
+            continue
+        if F['exclude'].search(first) and not HW.search(first):  # e.g. a software-only or senior-only post
+            continue
+        parts = [p.strip() for p in first.split('|')]
+        company = parts[0][:60] or 'Startup'
+        title = ' | '.join(parts[1:])[:140] or first[:140]
+        sector = 'energy' if re.search(r'fusion|nuclear|fission|reactor|battery|energy|grid|solar|hydrogen|climate', txt, re.I) else \
+                 'aero' if re.search(r'aerospace|\bspace\b|satellite|rocket|propulsion|drone|aircraft|aviation|defense', txt, re.I) else 'other'
+        out.append(dict(id=f"HN|{ch['id']}", company=company, sector=sector, title=title, location='HN Who is hiring, ' + story['title'][24:].strip(' ()'),
+                        url=f"https://news.ycombinator.com/item?id={ch['id']}", source='hn'))
+    return out
+
+
+# ---------- news: funding and new sites, a sign hiring is coming ----------
+NEWS_QUERIES = [
+    '(Seattle OR Bellevue OR Redmond OR Kirkland OR Bothell OR Everett OR Kent OR Tukwila OR Woodinville OR Tacoma) startup raises (space OR fusion OR nuclear OR battery OR aerospace OR drone OR robotics OR hardware OR energy OR defense)',
+    'site:geekwire.com raises (space OR fusion OR nuclear OR battery OR aerospace OR drone OR robotics OR hardware OR climate OR energy)',
+    'Washington state (new facility OR opens factory OR expands headquarters) (aerospace OR space OR energy OR manufacturing) Seattle',
+]
+
+
+def news():
+    items = {}
+    for q in NEWS_QUERIES:
+        u = 'https://news.google.com/rss/search?' + urllib.parse.urlencode({'q': q + ' when:14d', 'hl': 'en-US', 'gl': 'US', 'ceid': 'US:en'})
+        r = subprocess.run(['curl', '-s', '-f', '-L', '-m', '40', '-A', UA, u], capture_output=True, text=True)
+        if r.returncode != 0:
+            continue
+        for it in re.findall(r'(?s)<item>(.*?)</item>', r.stdout):
+            g = lambda tag: html.unescape((re.search(rf'(?s)<{tag}[^>]*>(.*?)</{tag}>', it) or [None, ''])[1]).strip()
+            title, link, src, date = g('title'), g('link'), g('source'), g('pubDate')
+            title = re.sub(r'\s+-\s+[^-]+$', '', title) if src and title.endswith(src) else title
+            key = re.sub(r'[^a-z0-9]', '', title.lower())[:60]
+            if key and key not in items:
+                items[key] = dict(id='news|' + key, title=title, url=link, source=src, published=date)
+    return list(items.values())
 
 
 # ---------- app data ----------
@@ -293,6 +460,9 @@ def write_summary(jobs, pages, state, cos):
     changed = [p['name'].split(' (')[0] for p in pages if p.get('changed') == today]
     if changed:
         lines.append('Careers pages that changed: ' + ', '.join(changed))
+    fresh = [n for n in state.get('news', {}).values() if n['first_seen'] == today and today != state['baseline_date']]
+    if fresh:
+        lines.append(f"{len(fresh)} news stor{'ies' if len(fresh) > 1 else 'y'} about Seattle hardware companies raising money or expanding (News tab)")
     lines.append('Tap OK to open the full list.')
     open(os.path.join(os.path.dirname(DATA), 'summary.txt'), 'w').write('\n'.join(lines) + '\n')
 
@@ -302,13 +472,13 @@ def is_intern(title):
     return bool(F['intern'].search(title))
 
 
-def write_data(state, run_id, failed):
+def write_data(state, run_id, failed, soft=()):
     """docs/jobs.json: everything the phone app shows."""
     # still open = seen this run, or its board couldn't be checked this run
-    open_jobs = [j for j in state['seen'].values() if j.get('last_seen') == run_id or j['company'] in failed]
+    open_jobs = [j for j in state['seen'].values() if j.get('last_seen') == run_id or j['company'] in failed or j['company'] in soft]
     jobs = [dict(company=j['company'], title=j['title'], url=j['url'], sector=j['sector'],
                  location=re.sub(r',?\s*(United States|USA)\b', '', j['location'] or ''),
-                 intern=is_intern(j['title']), first_seen=j['first_seen'], id=j['id'])
+                 intern=is_intern(j['title']), first_seen=j['first_seen'], id=j['id'], source=j.get('source', 'board'))
             for j in open_jobs]
     jobs.sort(key=lambda j: (j['first_seen'], j['company'], j['title']), reverse=True)
     counts = {}
@@ -320,7 +490,8 @@ def write_data(state, run_id, failed):
                   changed=state['pages'].get(m['name'], {}).get('changed'), added=state['pages'].get(m['name'], {}).get('added', []))
              for m in CFG['manual']]
     out = dict(updated=now().isoformat(timespec='minutes'), baseline_date=state['baseline_date'],
-               failed=failed, companies=cos, pages=pages, jobs=jobs)
+               failed=failed, companies=cos, pages=pages, jobs=jobs,
+               news=sorted(state.get('news', {}).values(), key=lambda n: n['first_seen'], reverse=True)[:120])
     write_summary(jobs, pages, state, cos)
     os.makedirs(os.path.dirname(DATA), exist_ok=True)
     tmp = DATA + '.tmp'
@@ -399,16 +570,34 @@ def main():
         results = list(ex.map(check, [(c, state['locs']) for c in cloud]))
         page_results = list(ex.map(check_page, CFG['manual']))
     results += mac_results(mac)
+    try:
+        hn = hn_jobs()
+        results.append(('Hacker News', len(hn), hn, None))
+    except Exception as e:
+        log(f'Hacker News: ERROR {e}')
+    try:
+        for n in news():
+            old_n = state.setdefault('news', {}).get(n['id'])
+            state['news'][n['id']] = dict(n, first_seen=old_n['first_seen'] if old_n else today)
+        ncut = (now() - timedelta(days=45)).strftime('%Y-%m-%d')
+        state['news'] = {k: v for k, v in state['news'].items() if v['first_seen'] >= ncut}
+    except Exception as e:
+        log(f'news: ERROR {e}')
 
-    for name, digest, text, err in page_results:
+    soft = []  # sources that failed this run: keep their roles listed, but no warning in the app
+    for name, digest, text, err, pjobs in page_results:
         p = state['pages'].setdefault(name, {})
         if err or not digest:
             log(f'{name} (page): ERROR {err}')
+            soft.append(name)
             continue
+        results.append((name, len(pjobs), pjobs, None))
         old = set((p.get('text') or '').splitlines())
         if p.get('hash') and p['hash'] != digest:
-            added = [x for x in text.splitlines() if x not in old][:8]
-            if added:  # ignore changes that only remove text
+            # only flag new lines that look like a job title, so rotating banners and dates don't count
+            added = [x for x in text.splitlines() if x not in old and len(x) < 100 and page_job_ok(x)
+                     and not any(x.lower() in j['title'].lower() for j in pjobs)][:8]
+            if added:
                 p['changed'] = today
                 p['added'] = added
                 log(f'{name} (page): changed')
@@ -427,7 +616,7 @@ def main():
             if j['id'] not in state['seen']:
                 new.append(j)
                 state['seen'][j['id']] = dict(j, first_seen=today)
-            state['seen'][j['id']].update(last_seen=run_id, title=j['title'], location=j['location'], sector=j['sector'])
+            state['seen'][j['id']].update(last_seen=run_id, title=j['title'], location=j['location'], sector=j['sector'], source=j.get('source', 'board'))
 
     if dry:
         for j in sorted(new, key=lambda j: ([s for s, _ in SECTORS].index(j['sector']), j['company'])):
@@ -438,7 +627,7 @@ def main():
     # forget postings that closed more than 60 days ago
     cutoff = (now().replace(tzinfo=None) - timedelta(days=60)).isoformat()
     state['seen'] = {k: v for k, v in state['seen'].items() if v.get('last_seen', '') >= cutoff}
-    write_data(state, run_id, failed)
+    write_data(state, run_id, failed, soft)
     json.dump(state, open(STATE, 'w'), indent=1)
     log(f'done: {len(new)} new, {len(failed)} errors')
 

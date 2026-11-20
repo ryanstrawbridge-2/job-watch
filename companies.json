@@ -933,7 +933,8 @@
     },
     {
       "name": "PACCAR",
-      "url": "https://jobs.paccar.com/go/Engineering-Jobs/2706200"
+      "url": "https://jobs.paccar.com/go/Engineering-Jobs/2706200",
+      "jobs": false
     },
     {
       "name": "Korry",
@@ -1222,12 +1223,6 @@
       "url": "https://careers.zeroavia.com/search-jobs/",
       "sector": "aero",
       "why": "Custom WordPress careers site (Cloudflare 202 to curl). Workable account 'zeroavia' exists but only lists UK (Kemble) jobs; US/Everett jobs "
-    },
-    {
-      "name": "Korry Electronics (Everett, TransDigm)",
-      "url": "https://korryelectronics.workgr8.com/jobs",
-      "sector": "aero",
-      "why": "workgr8 board, no JSON API; not on DirectEmployers. Still manual."
     },
     {
       "name": "Nichols Brothers Boat Builders (Freeland, Whidbey)",
