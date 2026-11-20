@@ -1182,12 +1182,6 @@
       "why": "Lunar/Mars regolith simulants and test services; Everett. No careers page. Found via Alliance Velocity directory."
     },
     {
-      "name": "Google (Kirkland/Seattle)",
-      "url": "https://www.google.com/about/careers/applications/jobs/results/?location=Kirkland%2C%20WA%2C%20USA&location=Seattle%2C%20WA%2C%20USA",
-      "sector": "other",
-      "why": "No public JSON feed; data embedded in AF_initDataCallback. Some Devices & Services hardware roles in Kirkland."
-    },
-    {
       "name": "Meta Reality Labs (Redmond)",
       "url": "https://www.metacareers.com/jobs?offices[0]=Redmond%2C%20WA",
       "sector": "other",

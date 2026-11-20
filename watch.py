@@ -273,6 +273,31 @@ def check_page(m):
 
 
 # ---------- app data ----------
+def write_summary(jobs, pages, state, cos):
+    """docs/summary.txt: a few plain lines the iPhone Shortcut reads out."""
+    today = now().strftime('%Y-%m-%d')
+    new = [j for j in jobs if j['first_seen'] == today and today != state['baseline_date']]
+    order = {'energy': 0, 'aero': 1, 'other': 2}
+    new.sort(key=lambda j: (order.get(j['sector'], 3), not j['intern'], j['company']))
+    lines = [now().strftime('%A %b %-d')]
+    if new:
+        by = {k: sum(j['sector'] == k for j in new) for k in order}
+        interns = sum(j['intern'] for j in new)
+        lines.append(f"{len(new)} new role{'s' if len(new) > 1 else ''} today: {by['energy']} energy, {by['aero']} aero/space, {by['other']} other"
+                     + (f", {interns} internship{'s' if interns > 1 else ''}" if interns else ''))
+        lines += [f"- {j['company'].split(' (')[0]}: {j['title']}" for j in new[:8]]
+        if len(new) > 8:
+            lines.append(f"...and {len(new) - 8} more")
+    else:
+        lines.append(f"No new roles yet today. {len(jobs)} open across {len(cos)} companies.")
+    changed = [p['name'].split(' (')[0] for p in pages if p.get('changed') == today]
+    if changed:
+        lines.append('Careers pages that changed: ' + ', '.join(changed))
+    lines.append('Tap OK to open the full list.')
+    open(os.path.join(os.path.dirname(DATA), 'summary.txt'), 'w').write('\n'.join(lines) + '\n')
+
+
+
 def is_intern(title):
     return bool(F['intern'].search(title))
 
@@ -296,6 +321,7 @@ def write_data(state, run_id, failed):
              for m in CFG['manual']]
     out = dict(updated=now().isoformat(timespec='minutes'), baseline_date=state['baseline_date'],
                failed=failed, companies=cos, pages=pages, jobs=jobs)
+    write_summary(jobs, pages, state, cos)
     os.makedirs(os.path.dirname(DATA), exist_ok=True)
     tmp = DATA + '.tmp'
     json.dump(out, open(tmp, 'w'), separators=(',', ':'))
