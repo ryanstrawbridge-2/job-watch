@@ -3,9 +3,9 @@
     "engineer": "\\bengineer|engineering\\b",
     "intern": "\\binterns?(hip)?\\b|\\bco-?op\\b",
     "field": "mechanical|manufactur|propulsion|test|design|structur|thermal|fluid|tool|production|hardware|integration|aerospace|materials|process|industrial|mechanism|electrical|quality|systems|R&D|robotic|controls",
-    "exclude": "senior|\\bsr\\b|staff|principal|\\blead\\b|manager|director|head of|chief|\\bvp\\b|president|fellow|\\bIII\\b|\\bIV\\b|\\bV\\b|expert|software|developer|\\bSDE\\b|data|cloud|network|\\bIT\\b|security|cyber|devops|site reliability|machine learning|\\bML\\b|\\bAI\\b|sales|solutions|support engineer|customer|marketing|finance|recruit|legal|business|technician|machinist|assembler|operator|contract|game|undergraduate|field service|systems? development engineer|region services|ASIC",
+    "exclude": "senior|\\bsr\\b|staff|principal|\\blead\\b|manager|director|head of|chief|\\bvp\\b|president|fellow|\\bIII\\b|\\bIV\\b|\\bV\\b|expert|software|developer|\\bSDE\\b|data|cloud|network|\\bIT\\b|security|cyber|devops|site reliability|machine learning|\\bML\\b|\\bAI\\b|sales|solutions|support engineer|customer|marketing|finance|recruit|legal|business|technician|machinist|assembler|operator|contract|game|undergraduate|field service|systems? development engineer|region services|ASIC|supply chain|planning intern|marketing|welder|journeyman|account executive|account manager|accounting",
     "local": "\\b(seattle|bellevue|redmond|kirkland|bothell|woodinville|issaquah|everett|mukilteo|lynnwood|arlington, wa|marysville|kent|renton|auburn|tukwila|federal way|tacoma|frederickson|puyallup|sumner|bremerton|silverdale|sedro|hamilton|bellingham|mount vernon|burlington|puget)\\b|washington(?!,? ?d\\.?c)|\\bWA\\b",
-    "far": "moses lake|spokane|richland|pullman|wenatchee|yakima|vancouver, wa|layton|, UT\\b|utah|district of columbia|\\bD\\.?C\\.?\\b"
+    "far": "moses lake|spokane|richland|pullman|wenatchee|yakima|vancouver, wa|layton|, UT\\b|utah|district of columbia|\\bD\\.?C\\.?\\b|airway heights|cheney|liberty lake|spokane valley|kennewick|pasco|ellensburg|walla walla|longview"
   },
   "companies": [
     {
@@ -924,6 +924,24 @@
       "ats": "dejobs_all",
       "via": "mac",
       "sector": "other"
+    },
+    {
+      "name": "Parker Hannifin (Exotic Metals Forming, Kent)",
+      "aliases": [
+        "Parker Hannifin",
+        "Parker Aerospace",
+        "Exotic Metals Forming"
+      ],
+      "ats": "talemetry",
+      "host": "parkercareers.ttcportals.com",
+      "sector": "aero",
+      "via": "mac"
+    },
+    {
+      "name": "Nautilus Biotechnology (Seattle)",
+      "ats": "ashby",
+      "slug": "Nautilus Biotechnology",
+      "sector": "other"
     }
   ],
   "manual": [
@@ -950,37 +968,50 @@
     },
     {
       "name": "Verathon",
-      "url": "https://us-careers-verathon.icims.com/jobs/search"
+      "url": "https://us-careers-verathon.icims.com/jobs/search?ss=1&in_iframe=1",
+      "careers_page": "https://us-careers-verathon.icims.com/jobs/search",
+      "render": true
     },
     {
       "name": "Modern Hydrogen",
       "url": "https://modernelectron.applytojob.com/apply",
       "sector": "other",
-      "why": "JazzHR (subdomain still modernelectron), HTML only, no public JSON; currently zero openings. Bothell/Woodinville hydrogen startup"
+      "why": "JazzHR (subdomain still modernelectron), HTML only, no public JSON; currently zero openings. Bothell/Woodinville hydrogen startup",
+      "careers_page": "https://modernelectron.applytojob.com/apply",
+      "render": true
     },
     {
       "name": "PAE (Seattle office)",
-      "url": "https://www.paycomonline.net/v4/ats/web.php/portal/60E1645CD3118030493CCB4F790AF1C9/career-page",
+      "url": "https://www.paycomonline.net/v4/ats/web.php/jobs?clientkey=60E1645CD3118030493CCB4F790AF1C9",
       "sector": "other",
-      "why": "Paycom career portal (JS app), no public JSON endpoint found"
+      "why": "Paycom career portal (JS app), no public JSON endpoint found",
+      "careers_page": "https://www.paycomonline.net/v4/ats/web.php/portal/60E1645CD3118030493CCB4F790AF1C9/career-page",
+      "render": true
     },
     {
       "name": "PCS Structural Solutions",
       "url": "https://www.paycomonline.net/v4/ats/web.php/jobs?clientkey=772C3279D75E0FFAB33570D71B96316D",
       "sector": "other",
-      "why": "Paycom, no public JSON endpoint found (Seattle + Tacoma offices)"
+      "why": "Paycom, no public JSON endpoint found (Seattle + Tacoma offices)",
+      "careers_page": "https://www.paycomonline.net/v4/ats/web.php/jobs?clientkey=772C3279D75E0FFAB33570D71B96316D",
+      "render": true
     },
     {
       "name": "Glumac (Tetra Tech)",
-      "url": "https://tetratech.referrals.selectminds.com/glumac/",
+      "url": "https://tetratech.taleo.net/careersection/1/jobsearch.ftl?lang=en&keyword=Seattle",
       "sector": "other",
-      "why": "Oracle SelectMinds referral site under Tetra Tech, HTML only"
+      "why": "Oracle SelectMinds referral site under Tetra Tech, HTML only",
+      "careers_page": "https://tetratech.referrals.selectminds.com/glumac/",
+      "render": true
     },
     {
       "name": "Pacific Northwest National Laboratory (Seattle office)",
-      "url": "https://careers-pnnl.icims.com/jobs/search?ss=1",
+      "url": "https://careers-pnnl.icims.com/jobs/search?ss=1&searchLocation=12781-12827-Seattle&in_iframe=1",
       "sector": "other",
-      "why": "iCIMS (careers-pnnl / universityrecruiting-pnnl / postdoc-pnnl.icims.com), HTML only; most jobs are Richland (excluded), filter to Seattle b"
+      "why": "iCIMS (careers-pnnl / universityrecruiting-pnnl / postdoc-pnnl.icims.com), HTML only; most jobs are Richland (excluded), filter to Seattle b",
+      "careers_page": "https://careers-pnnl.icims.com/jobs/search?ss=1",
+      "render": true,
+      "jobs": false
     },
     {
       "name": "Bonneville Power Administration",
@@ -992,7 +1023,9 @@
       "name": "McKinstry",
       "url": "https://phg.tbe.taleo.net/phg02/ats/careers/v2/searchResults?org=MCKINSTRY&cws=41",
       "sector": "other",
-      "why": "Taleo Business Edition, HTML only, no public JSON"
+      "why": "Taleo Business Edition, HTML only, no public JSON",
+      "careers_page": "https://phg.tbe.taleo.net/phg02/ats/careers/v2/searchResults?org=MCKINSTRY&cws=41",
+      "render": true
     },
     {
       "name": "Turner Construction (Seattle)",
@@ -1020,27 +1053,20 @@
     },
     {
       "name": "Fujifilm Sonosite (Bothell)",
-      "url": "https://uscareers-fujifilm.icims.com/jobs/search?ss=1",
+      "url": "https://uscareers-fujifilm.icims.com/jobs/search?ss=1&searchKeyword=Bothell&in_iframe=1",
       "sector": "other",
-      "why": "iCIMS, HTML only (Bothell ultrasound hardware engineering)"
+      "why": "iCIMS, HTML only (Bothell ultrasound hardware engineering)",
+      "careers_page": "https://uscareers-fujifilm.icims.com/jobs/search?ss=1",
+      "render": true,
+      "jobs": false
     },
     {
       "name": "Herrera Environmental Consultants",
-      "url": "https://www.herrerainc.com/careers/",
+      "url": "https://herreraenvironmentalconsultantsinc.applytojob.com/apply",
       "sector": "other",
-      "why": "JazzHR, no public JSON"
-    },
-    {
-      "name": "Exotic Metals Forming (Parker, Kent)",
-      "url": "https://www.parker.com/us/en/divisions/exotic-metals-forming-division.html",
-      "sector": "other",
-      "why": "now a Parker Hannifin division (aero); Parker Workday tenant not identified - leave to aero batch"
-    },
-    {
-      "name": "LeoStella",
-      "url": "https://www.leostella.com/careers",
-      "sector": "other",
-      "why": "Smallsat manufacturer in Tukwila (BlackSky-owned); careers page embeds BlackSky greenhouse board, which is already covered. Listed for refer"
+      "why": "JazzHR, no public JSON",
+      "careers_page": "https://www.herrerainc.com/careers/",
+      "render": true
     },
     {
       "name": "Pulse Space",
@@ -1146,9 +1172,11 @@
     },
     {
       "name": "EchoNous",
-      "url": "https://echonous.com/about/careers/",
+      "url": "https://www.paycomonline.net/v4/ats/web.php/portal/DF04A3982B16167C04973116D4EE7937/career-page",
       "sector": "other",
-      "why": "Handheld AI ultrasound devices; Redmond (medical-device hardware). Careers page, no supported ATS found. Found from prior knowledge."
+      "why": "Handheld AI ultrasound devices; Redmond (medical-device hardware). Careers page, no supported ATS found. Found from prior knowledge.",
+      "careers_page": "https://echonous.com/about/careers/",
+      "render": true
     },
     {
       "name": "Emerald Battery Labs",
@@ -1199,12 +1227,6 @@
       "why": "SuccessFactors RMK; only an RSS feed capped at 20 items (https://careers.olympusamerica.com/services/rss/job/?locale=en_US), keyword/locatio"
     },
     {
-      "name": "Nautilus Biotechnology (Seattle)",
-      "url": "https://www.nautilus.bio/careers/",
-      "sector": "other",
-      "why": "Careers page blocks curl (403); uses Ashby per page text but slug not found (tried nautilus, nautilusbio, nautilus-biotechnology, nautilusbi"
-    },
-    {
       "name": "Valve (Bellevue)",
       "url": "https://www.valvesoftware.com/en/jobs",
       "sector": "other",
@@ -1212,9 +1234,12 @@
     },
     {
       "name": "Spacelabs Healthcare (Snoqualmie)",
-      "url": "https://apply-jobs-osi-systems.icims.com/jobs/search?ss=1&searchLocation=12781-12827-Snoqualmie",
+      "url": "https://apply-jobs-osi-systems.icims.com/jobs/search?ss=1&searchKeyword=Snoqualmie&in_iframe=1",
       "sector": "other",
-      "why": "Parent OSI Systems uses iCIMS, no JSON. Snoqualmie HQ hires electrical, manufacturing, quality engineers and interns (patient monitors)."
+      "why": "Parent OSI Systems uses iCIMS, no JSON. Snoqualmie HQ hires electrical, manufacturing, quality engineers and interns (patient monitors).",
+      "careers_page": "https://apply-jobs-osi-systems.icims.com/jobs/search?ss=1&searchLocation=12781-12827-Snoqualmie",
+      "render": true,
+      "jobs": false
     },
     {
       "name": "First Mode (Seattle)",
@@ -1232,7 +1257,9 @@
       "name": "Nichols Brothers Boat Builders (Freeland, Whidbey)",
       "url": "https://www.paycomonline.net/v4/ats/web.php/jobs?clientkey=C21BB6292E7365E4FD1E8C86E90AAD40",
       "sector": "aero",
-      "why": "Paycom, no public JSON."
+      "why": "Paycom, no public JSON.",
+      "careers_page": "https://www.paycomonline.net/v4/ats/web.php/jobs?clientkey=C21BB6292E7365E4FD1E8C86E90AAD40",
+      "render": true
     },
     {
       "name": "Glosten (naval architects, Seattle)",
@@ -1242,9 +1269,12 @@
     },
     {
       "name": "Crowley / Jensen Maritime (Seattle naval architecture)",
-      "url": "https://cacareers-crowley.icims.com",
+      "url": "https://cacareers-crowley.icims.com/jobs/search?ss=1&searchKeyword=Seattle&in_iframe=1",
       "sector": "aero",
-      "why": "iCIMS, no WA results on DirectEmployers."
+      "why": "iCIMS, no WA results on DirectEmployers.",
+      "careers_page": "https://cacareers-crowley.icims.com",
+      "render": true,
+      "jobs": false
     }
   ],
   "notify_board_problems": true,

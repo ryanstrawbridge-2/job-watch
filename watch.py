@@ -46,7 +46,21 @@ def local_ok(loc):
     """True if any listed site is in the Seattle area; None if the board doesn't say."""
     if AMBIG.fullmatch(loc.strip()):
         return None
-    return any(F['local'].search(part) and not F['far'].search(part) for part in re.split(r';|\||/', loc))
+    return any(F['local'].search(part) and not F['far'].search(part) and not OTHER_STATE.search(part)
+               for part in re.split(r';|\||/', loc))
+
+
+# A place name that also exists elsewhere (Washington, MO; Marysville, OH; Kent, OH; Auburn, AL) is only
+# Seattle-area if no other state is named next to it.
+_STATES = ('AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA '
+           'RI SC SD TN TX UT VT VA WV WI WY').split()
+_STATE_NAMES = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
+                'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts',
+                'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
+                'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
+                'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'West Virginia', 'Wisconsin',
+                'Wyoming', 'District of Columbia', 'British Columbia', 'Ontario', 'England', 'Germany', 'India', 'Mexico', 'France']
+OTHER_STATE = re.compile(r'(,|-|\s)\s*(' + '|'.join(_STATES) + r')\b(?!\w)|\b(' + '|'.join(_STATE_NAMES) + r')\b')
 
 
 # ---------- fetching ----------
@@ -68,7 +82,7 @@ def greenhouse(c, cache):
 
 
 def ashby(c, cache):
-    d = curl(f"https://api.ashbyhq.com/posting-api/job-board/{c['slug']}")
+    d = curl(f"https://api.ashbyhq.com/posting-api/job-board/{urllib.parse.quote(c['slug'])}")
     out = []
     for j in d['jobs']:
         locs = [j.get('location', '')] + [s.get('location', '') for s in (j.get('secondaryLocations') or [])]
@@ -264,7 +278,38 @@ def dejobs_all(c, cache):
     return out
 
 
-FETCH = dict(dejobs_all=dejobs_all, dejobs=dejobs, json=jsonfeed, gem=gem, smartrecruiters=smartrecruiters, workable=workable, eightfold=eightfold, oracle=oracle, greenhouse=greenhouse, ashby=ashby, lever=lever, breezy=breezy, rippling=rippling, ukg=ukg, workday=workday, amazon=amazon)
+def browser_json(url):
+    """Fetch JSON through headless Chrome, which gets past Cloudflare-style bot checks. Mac only."""
+    prof = os.path.expanduser('~/Library/Application Support/job-watch/chrome')
+    os.makedirs(prof, exist_ok=True)
+    chrome = next((p for p in ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome'] if os.path.exists(p)), None)
+    if not chrome:
+        raise RuntimeError('no browser available')
+    r = subprocess.run([chrome, '--headless=new', '--disable-gpu', f'--user-data-dir={prof}', '--virtual-time-budget=20000',
+                        '--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36',
+                        '--dump-dom', url], capture_output=True, text=True, timeout=120)
+    m = re.search(r'(?s)<pre[^>]*>(.*)</pre>', r.stdout)
+    if not m:
+        raise RuntimeError('browser fetch returned no JSON')
+    return json.loads(html.unescape(m.group(1)))
+
+
+def talemetry(c, cache):
+    """Talemetry career sites (Parker Hannifin): /jobs/search.json, behind a bot check, so read through Chrome."""
+    out, page = [], 1
+    while page <= 40:
+        d = browser_json(f"https://{c['host']}/jobs/search.json?per_page=100&page={page}")
+        for j in d.get('entries', []):
+            l = j.get('location') or {}
+            out.append((j['id'], j['title'], f"{(l.get('locality') or '').title()}, {l.get('region_abbr') or ''}",
+                        f"https://{c['host']}/jobs/{j['id']}-{j.get('permalink', '')}"))
+        if page * 100 >= d.get('total_entries', 0):
+            break
+        page += 1
+    return out
+
+
+FETCH = dict(talemetry=talemetry, dejobs_all=dejobs_all, dejobs=dejobs, json=jsonfeed, gem=gem, smartrecruiters=smartrecruiters, workable=workable, eightfold=eightfold, oracle=oracle, greenhouse=greenhouse, ashby=ashby, lever=lever, breezy=breezy, rippling=rippling, ukg=ukg, workday=workday, amazon=amazon)
 
 
 def sector_of(c, title):
@@ -345,7 +390,9 @@ CHROME = next((p for p in ['/Applications/Google Chrome.app/Contents/MacOS/Googl
 JOBLINK = re.compile(r'/(careers?|jobs?|positions?|openings?|opportunities|join-us|roles?)/[^/?#]*[a-z][^/?#]{3,}|'
                      r'greenhouse\.io/.+/jobs/\d|lever\.co/[^/]+/[0-9a-f-]{20,}|ashbyhq\.com/[^/]+/[0-9a-f-]{20,}|'
                      r'workable\.com/.+/j/|bamboohr\.com/careers/\d|paylocity\.com/.+/Details/|breezy\.hr/p/|'
-                     r'rippling\.com/.+/jobs/|jobvite\.com/.+/job/|icims\.com/jobs/\d|recruitee\.com/o/|myworkdayjobs\.com/.+/job/', re.I)
+                     r'rippling\.com/.+/jobs/|jobvite\.com/.+/job/|icims\.com/jobs/\d|recruitee\.com/o/|myworkdayjobs\.com/.+/job/|'
+                     r'applytojob\.com/apply/[A-Za-z0-9]+/|paycomonline\.net/.+/jobs/\d|taleo\.net/.+(requisition\.jsp|jobdetail\.ftl|viewRequisition)|'
+                     r'ttcportals\.com/jobs/\d|successfactors\.\w+/.+career_job_req_id|careerplug\.com/jobs/\d', re.I)
 
 
 def get_html(url, render=False):
@@ -403,11 +450,14 @@ def link_jobs(html_src, base):
     for href, text in re.findall(r'(?is)<a[^>]+href="([^"#]+)"[^>]*>(.*?)</a>', html_src):
         href = urllib.parse.urljoin(base, html.unescape(href))
         title = ' '.join(html.unescape(re.sub(r'<[^>]+>', ' ', text)).split())
+        if len(title) > 120:  # a whole job card is inside the link (Paycom etc.): its first text is the title
+            pieces = [' '.join(html.unescape(p).split()) for p in re.split(r'<[^>]+>', text)]
+            title = next((p for p in pieces if len(p) >= 4), '')
         if not JOBLINK.search(href) or len(title) < 4 or len(title) > 120:
             continue
         if re.fullmatch(r'(?i)(apply|apply now|learn more|view|details|see (all|more|open).*|careers?|jobs?|open (roles|positions)|view (all )?(jobs|openings|positions))', title):
             slug = re.sub(r'[-_]+', ' ', href.rstrip('/').rsplit('/', 1)[-1])
-            title = slug if re.search(r'[a-z]{3}', slug) and not slug.isdigit() else title
+            title = slug if re.search(r'[a-z]{3}', slug) and not slug.isdigit() and not re.search(r'[?=&]', slug) else title
         out.append((href, title, ''))
     return out
 
@@ -439,7 +489,9 @@ def page_job_ok(title):
     t = title.lower()
     if NONLOCAL.search(title):  # careers pages often list other offices' jobs
         return False
-    return not F['exclude'].search(title) and bool(F['engineer'].search(t) or F['intern'].search(t) or F['field'].search(t))
+    # titles scraped from careers pages: require an engineering word, since there's no job category to go on
+    return not F['exclude'].search(title) and bool(F['engineer'].search(t) or (F['intern'].search(t) and F['field'].search(t))
+                                                   or re.fullmatch(r'(?i)(summer |fall )?(20\d\d )?(engineering )?intern(ship)?s?( 20\d\d)?', title.strip()))
 
 
 def check_page(m):
@@ -600,6 +652,7 @@ def careers_url(c):
         amazon=lambda: 'https://www.amazon.jobs/en/search?loc_query=Seattle%2C+WA',
         smartrecruiters=lambda: f"https://careers.smartrecruiters.com/{c.get('slug')}",
         workable=lambda: f"https://apply.workable.com/{c.get('slug')}/",
+        talemetry=lambda: f"https://{c.get('host')}/jobs/search",
         dejobs=lambda: 'https://dejobs.org/jobs/?' + urllib.parse.urlencode({'location': 'WA', 'q': c.get('company', '')}),
         gem=lambda: f"https://jobs.gem.com/{c.get('slug')}",
         eightfold=lambda: f"https://{c.get('host')}/careers",
