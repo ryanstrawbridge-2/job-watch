@@ -227,7 +227,44 @@ def dejobs(c, cache):  # DirectEmployers feed: covers many defense, maritime and
     return [(j.get('guid') or j.get('url'), j.get('title', ''), j.get('location', ''), j.get('url', '')) for j in items]
 
 
-FETCH = dict(dejobs=dejobs, json=jsonfeed, gem=gem, smartrecruiters=smartrecruiters, workable=workable, eightfold=eightfold, oracle=oracle, greenhouse=greenhouse, ashby=ashby, lever=lever, breezy=breezy, rippling=rippling, ukg=ukg, workday=workday, amazon=amazon)
+STAFFING = re.compile(r'actalent|system one|aerotek|insight global|eliassen|kforce|teksystems|randstad|robert half|jobot|apex systems|'
+                      r'kelly services|adecco|manpower|collabera|cybercoders|modis|akkodis|yoh|beacon hill|motion recruitment|vaco|hays|'
+                      r'experis|aston carter|talentbridge|staffing|recruit|pds tech|pds defense|butler america|volt|tata consultancy', re.I)
+SWEEP_HW = re.compile(r'mechanical|manufactur|structur|civil|electrical|hardware|test|design|process|aerospace|propulsion|thermal|'
+                      r'materials|controls|mechatronic|robotic|naval|marine|industrial|quality|reliability|tooling|production|'
+                      r'project engineer|field engineer|facilities|HVAC|piping|plumbing|geotech|transportation|water|nuclear|'
+                      r'power|grid|substation|battery|integration|validation|manufacturing|intern|co-op|fluid|composite|weld', re.I)
+SWEEP_NOT = re.compile(r'services engineer|managed services|workspace|\bEUC\b|digital|consulting engineer|platform|site reliability|'
+                       r'infrastructure engineer|administrator|cloud|devops|network|security|solutions|data center tech|'
+                       r'technical account|customer|presales|pre-sales|support engineer|database|analytics|\bAI\b|\bML\b|'
+                       r'machine learning|ux|user experience|product manager|program manager|test automation|qa engineer|'
+                       r'quality assurance|sdet|front.?end|back.?end|full.?stack|mobile|ios|android|web', re.I)
+AERO_WORDS = re.compile(r'aero|space|satellite|aircraft|aviation|avionic|rocket|propulsion|defense|naval|navy|fleet|missile|flight|boeing|airline', re.I)
+ENERGY_WORDS = re.compile(r'energy|power|nuclear|fusion|solar|wind|battery|grid|utility|electric co|hydrogen|vernova|framatome|reactor|pnnl|national lab', re.I)
+
+
+def dejobs_all(c, cache):
+    """Every engineering job DirectEmployers has in Washington, from any company.
+    Catches employers that aren't on our list or whose own site blocks us."""
+    out, seen = [], set()
+    for q in c.get('queries', ['engineer', 'engineering intern', 'engineering co-op']):
+        off = 0
+        while off < c.get('max', 8000):
+            d = curl('https://dejobs.org/jobs/feed/json/?' + urllib.parse.urlencode({'q': q, 'location': 'WA', 'num_items': 500, 'offset': off}), timeout=90)
+            fresh = [j for j in d if j.get('guid') not in seen]
+            for j in fresh:
+                seen.add(j.get('guid'))
+                co = (j.get('company') or '').strip()
+                if not co or STAFFING.search(co):
+                    continue
+                out.append((j.get('guid'), j.get('title', ''), j.get('location', ''), j.get('url', ''), co, (j.get('date_new') or '')[:10]))
+            if len(d) < 500 or not fresh:
+                break
+            off += 500
+    return out
+
+
+FETCH = dict(dejobs_all=dejobs_all, dejobs=dejobs, json=jsonfeed, gem=gem, smartrecruiters=smartrecruiters, workable=workable, eightfold=eightfold, oracle=oracle, greenhouse=greenhouse, ashby=ashby, lever=lever, breezy=breezy, rippling=rippling, ukg=ukg, workday=workday, amazon=amazon)
 
 
 def sector_of(c, title):
@@ -236,12 +273,63 @@ def sector_of(c, title):
     return c.get('sector', 'other')
 
 
+def _ckey(name):
+    n = re.sub(r'\(.*?\)', '', name.lower())
+    n = re.sub(r'\b(inc|llc|corp|corporation|company|co|ltd|the|usa|us|group|holdings|technologies|industries)\b', '', n)
+    return re.sub(r'[^a-z0-9]', '', n)
+
+
+_WATCH = None
+
+
+def watched_by_board(company):
+    """True if this company already has its own board on our list (so the sweep would only duplicate it)."""
+    global _WATCH
+    if _WATCH is None:
+        _WATCH = {}
+        for c in CFG['companies']:
+            if c['ats'] == 'dejobs_all':
+                continue
+            for n in [c['name'], c.get('company', '')] + c.get('aliases', []):
+                k = _ckey(n.split(' / ')[0])
+                if len(k) >= 3:
+                    _WATCH[k] = c.get('sector', 'other')
+    k = _ckey(company)
+    return len(k) >= 3 and any(k == w or (len(w) >= 4 and (k.startswith(w) or w.startswith(k))) for w in _WATCH)
+
+
+def sector_for_company(company, title):
+    k = _ckey(company)
+    for c in CFG['companies'] + CFG['manual']:
+        w = _ckey(c['name'])
+        if len(w) >= 4 and (k.startswith(w) or w.startswith(k)):
+            return c.get('sector', 'other')
+    if ENERGY_WORDS.search(company):
+        return 'energy'
+    if AERO_WORDS.search(company + ' ' + title):
+        return 'aero'
+    return 'other'
+
+
 def check(args):
     c, cache = args
     try:
         jobs = FETCH[c['ats']](c, cache)
-        hits = [dict(id=f"{c['name']}|{i}", company=c['name'], sector=sector_of(c, t), title=' '.join(t.split()), location=l, url=u)
-                for i, t, l, u in jobs if title_ok(t) and local_ok(l) is not False]
+        hits = []
+        for row in jobs:
+            i, t, l, u = row[:4]
+            if not (title_ok(t) and local_ok(l) is not False):
+                continue
+            if len(row) > 4:  # catch-all feed: the row names its own company
+                co = row[4]
+                if not SWEEP_HW.search(t) or SWEEP_NOT.search(t):
+                    continue  # big mixed feed: keep only clearly hardware-side titles
+                if watched_by_board(co):
+                    continue  # already covered by that company's own board
+                hits.append(dict(id=f"ALL|{i}", company=co, sector=sector_for_company(co, t), title=' '.join(t.split()),
+                                 location=l, url=u, source='sweep', posted=row[5] if len(row) > 5 else ''))
+            else:
+                hits.append(dict(id=f"{c['name']}|{i}", company=c['name'], sector=sector_of(c, t), title=' '.join(t.split()), location=l, url=u))
         return c['name'], len(jobs), hits, None
     except Exception as e:  # one broken board shouldn't stop the rest
         return c['name'], 0, [], str(e)
@@ -614,8 +702,12 @@ def main():
         log(f'{name}: {total} postings, {len(hits)} match')
         for j in hits:
             if j['id'] not in state['seen']:
-                new.append(j)
-                state['seen'][j['id']] = dict(j, first_seen=today)
+                first = today
+                if j.get('posted') and j['posted'] < today:
+                    first = max(j['posted'], state['baseline_date'])  # posted before we saw it: file it under its posting day
+                if first == today:
+                    new.append(j)
+                state['seen'][j['id']] = dict(j, first_seen=first)
             state['seen'][j['id']].update(last_seen=run_id, title=j['title'], location=j['location'], sector=j['sector'], source=j.get('source', 'board'))
 
     if dry:

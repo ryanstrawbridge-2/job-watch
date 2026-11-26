@@ -57,11 +57,18 @@
       "name": "SpaceX / Starlink",
       "ats": "greenhouse",
       "slug": "spacex",
-      "sector": "aero"
+      "sector": "aero",
+      "aliases": [
+        "SpaceX"
+      ]
     },
     {
       "name": "Amazon",
-      "ats": "amazon"
+      "ats": "amazon",
+      "aliases": [
+        "Amazon.com",
+        "Amazon Web Services"
+      ]
     },
     {
       "name": "Cowboy Space",
@@ -370,15 +377,6 @@
       "sector": "energy",
       "ats": "ashby",
       "slug": "aerovy"
-    },
-    {
-      "name": "Microsoft",
-      "sector": "other",
-      "ats": "eightfold",
-      "host": "apply.careers.microsoft.com",
-      "domain": "microsoft.com",
-      "via": "mac",
-      "delay": 4
     },
     {
       "name": "Fluke (Fortive)",
@@ -920,6 +918,12 @@
       "company": "Stantec",
       "sector": "other",
       "via": "mac"
+    },
+    {
+      "name": "All Washington employers (DirectEmployers sweep)",
+      "ats": "dejobs_all",
+      "via": "mac",
+      "sector": "other"
     }
   ],
   "manual": [
