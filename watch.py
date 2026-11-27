@@ -9,6 +9,7 @@ Runs on GitHub Actions twice a day (.github/workflows/watch.yml).
 
 Companies and filters live in companies.json. History lives in data/seen.json.
 """
+import geo
 import html, json, os, re, subprocess, sys, time, urllib.parse
 from datetime import datetime, timedelta
 from concurrent.futures import ThreadPoolExecutor
@@ -32,6 +33,8 @@ SECTORS = [('energy', 'Energy'), ('aero', 'Aerospace and space'), ('other', 'Oth
 
 # ---------- filters ----------
 def title_ok(title):
+    if re.search(r'entry|early career|new grad|graduate|junior', title, re.I):
+        title = re.sub(r'\(?\bstaff\b\)?', '', title, flags=re.I)  # "Entry-Level (Staff) Geotechnical Engineer"
     if F['exclude'].search(title):
         return False
     if F['engineer'].search(title):
@@ -46,8 +49,15 @@ def local_ok(loc):
     """True if any listed site is in the Seattle area; None if the board doesn't say."""
     if AMBIG.fullmatch(loc.strip()):
         return None
-    return any(F['local'].search(part) and not F['far'].search(part) and not OTHER_STATE.search(part)
-               for part in re.split(r';|\||/', loc))
+    for part in re.split(r';|\||/', loc):
+        if F['far'].search(part):
+            continue
+        if F['local'].search(part) and not OTHER_STATE.search(part):
+            return True
+        # "Cambridge, MA, Arlington, VA, Seattle, WA": a Seattle-area town named with WA counts
+        if re.search(r'\b[A-Z][a-z]+( [A-Z][a-z]+)?,\s*(WA|Washington)\b(?!,?\s*D\.?C)', part) and F['local'].search(re.sub(r'\bWA\b|Washington', '', part)):
+            return True
+    return False
 
 
 # A place name that also exists elsewhere (Washington, MO; Marysville, OH; Kent, OH; Auburn, AL) is only
@@ -118,14 +128,43 @@ def ukg(c, cache):
     return out
 
 
+def workday_local_facets(api):
+    """Workday's own location filter, narrowed to Seattle-area sites, so big boards (Blue Origin has
+    ~1,850 engineering postings) aren't cut off by the per-term cap. {} if the board has no usable one."""
+    try:
+        d = curl(api, data={"limit": 1, "offset": 0, "searchText": "", "appliedFacets": {}})
+    except Exception:
+        return {}
+    found = {}
+
+    def walk(fs):
+        for f in fs:
+            vals = f.get('values') or []
+            param = f.get('facetParameter') or ''
+            if vals and 'values' in vals[0]:
+                walk(vals)
+                continue
+            if 'location' not in param.lower():
+                continue
+            ids = [v['id'] for v in vals if v.get('id') and local_ok(v.get('descriptor') or '')]
+            if ids:
+                found[param] = ids
+    walk(d.get('facets') or [])
+    for p in ('locations', 'locationCity', 'locationRegionStateProvince', 'locationRegion'):
+        if p in found:
+            return {p: found[p]}
+    return dict([next(iter(found.items()))]) if found else {}
+
+
 def workday(c, cache):
     t, wd, site = c['tenant'], c['wd'], c['site']
     api = f"https://{t}.{wd}.myworkdayjobs.com/wday/cxs/{t}/{site}/jobs"
     seen = {}
+    facets = workday_local_facets(api)
     for term in c.get('search_terms', CFG['workday_terms']):
         off, total = 0, None
-        while off < c.get('max_per_term', 600):
-            d = curl(api, data={"limit": 20, "offset": off, "searchText": term, "appliedFacets": {}})
+        while off < c.get('max_per_term', 600 if not facets else 2000):
+            d = curl(api, data={"limit": 20, "offset": off, "searchText": term, "appliedFacets": facets})
             posts = d.get('jobPostings', [])
             if total is None:  # Workday only reports the total on the first page
                 total = d.get('total', 0)
@@ -191,7 +230,14 @@ def eightfold(c, cache):
         while start < c.get('max', 600):
             loc = c.get('location', None if c.get('query') else 'Seattle')
             qs = urllib.parse.urlencode({'domain': c['domain'], 'query': q, 'start': start, **({'location': loc} if loc else {})})
-            d = curl(f"https://{c['host']}/api/pcsx/search?{qs}")['data']
+            for wait in (0, 30, 90, None):  # Microsoft resets connections when it thinks you're going too fast
+                try:
+                    d = curl(f"https://{c['host']}/api/pcsx/search?{qs}")['data']
+                    break
+                except Exception:
+                    if wait is None:
+                        raise
+                    time.sleep(wait or c.get('delay', 1.0) * 3)
             pos = d.get('positions', [])
             for p in pos:
                 loc = '; '.join((p.get('standardizedLocations') or []) + (p.get('locations') or []))
@@ -339,7 +385,29 @@ def adzuna(c, cache):
     return out
 
 
-FETCH = dict(adzuna=adzuna, talemetry=talemetry, dejobs_all=dejobs_all, dejobs=dejobs, json=jsonfeed, gem=gem, smartrecruiters=smartrecruiters, workable=workable, eightfold=eightfold, oracle=oracle, greenhouse=greenhouse, ashby=ashby, lever=lever, breezy=breezy, rippling=rippling, ukg=ukg, workday=workday, amazon=amazon)
+def adp(c, cache):
+    """ADP Workforce Now career center (public JSON, 20 per page)."""
+    base = ('https://workforcenow.adp.com/mascsr/default/careercenter/public/events/staffing/v1/job-requisitions'
+            f"?cid={c['cid']}&ccId={c['ccId']}&timeStamp=1&lang=en_US&locale=en_US")
+    out, skip = [], 0
+    while skip < 1000:
+        d = curl(base + f'&$top=20&$skip={skip}')
+        reqs = d.get('jobRequisitions') or []
+        for j in reqs:
+            locs = []
+            for l in j.get('requisitionLocations') or []:
+                a = l.get('address') or {}
+                locs.append(', '.join(filter(None, [a.get('cityName'), (a.get('countrySubdivisionLevel1') or {}).get('codeValue')])))
+            url = (f"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={c['cid']}"
+                   f"&ccId={c['ccId']}&jobId={j['itemID']}&lang=en_US")
+            out.append((j['itemID'], j.get('requisitionTitle', ''), '; '.join(locs), url))
+        skip += 20
+        if not reqs or skip >= (d.get('meta') or {}).get('totalNumber', 0):
+            break
+    return out
+
+
+FETCH = dict(adp=adp, adzuna=adzuna, talemetry=talemetry, dejobs_all=dejobs_all, dejobs=dejobs, json=jsonfeed, gem=gem, smartrecruiters=smartrecruiters, workable=workable, eightfold=eightfold, oracle=oracle, greenhouse=greenhouse, ashby=ashby, lever=lever, breezy=breezy, rippling=rippling, ukg=ukg, workday=workday, amazon=amazon)
 
 
 def sector_of(c, title):
@@ -642,14 +710,75 @@ def is_intern(title):
     return bool(F['intern'].search(title))
 
 
+# Experience level from the title. 'senior' roles are left out of the app entirely.
+_SENIOR = re.compile(r'\b(III|IV|VI?)\b|\b(engineer|scientist|designer|level)\s*[-–]?\s*[3-9]\b|experienced|\bexp(erience)?\s*(level\s*)?[3-9]', re.I)
+_ENTRY = re.compile(r'\b(I|1)\b(?!\s*[-–]\s*\d)|level\s*1\b|associate|junior|\bjr\b|entry|new grad|graduate|early career|rotation|apprentice|recent grad|university grad', re.I)
+_MID = re.compile(r'\b(II|2)\b|mid[- ]level|\bmid\b|level\s*2\b', re.I)
+_YEARS = re.compile(r'(\d+)\s*(\+|[-–]\s*\d+)?\s*\+?\s*(years?|yrs?)', re.I)
+
+
+def level_of(title):
+    if is_intern(title):
+        return 'intern'
+    y = _YEARS.search(title)
+    if y:
+        n = int(y.group(1))
+        return 'entry' if n <= 1 else 'mid' if n == 2 else 'senior'
+    if re.search(r'\b(associate|entry[- ]level|junior|early career|new grad|level 1|I)\s*(,|/|or)\s', title, re.I):
+        return 'entry'  # "Engineer (Associate or Experienced)": open to entry level
+    if _SENIOR.search(title):
+        return 'senior'
+    if _ENTRY.search(title):
+        return 'entry'
+    if _MID.search(title):
+        return 'mid'
+    return 'none'
+
+
+MAX_MILES = 50
+
+
+def job_miles(job):
+    """Closest listed site to Seattle in miles; falls back to a town in the company name; None if unknown."""
+    best = None
+    for part in re.split(r';|\|', job['location'] or ''):
+        if OTHER_STATE.search(part):
+            continue
+        m = geo.place_miles(part)
+        if m is not None and (best is None or m < best):
+            best = m
+    if best is None:
+        best = geo.place_miles(re.sub(r'^[^(]*', '', job['company']))
+    if best is None and company_town(job['company']):
+        best = geo.place_miles(company_town(job['company']))
+    return best
+
+
+def company_town(name):
+    for c in CFG['companies'] + CFG['manual']:
+        if c['name'] == name:
+            return c.get('town')
+
+
+def shown_location(job):
+    loc = re.sub(r',?\s*(United States|USA)\b', '', job['location'] or '').strip()
+    town = company_town(job['company'])
+    if town and (not loc or loc.lower() in ('see posting', 'remote', 'washington', 'wa')):
+        return f'{town}, WA (company site)'
+    return loc
+
+
 def write_data(state, run_id, failed, soft=()):
     """docs/jobs.json: everything the phone app shows."""
     # still open = seen this run, or its board couldn't be checked this run
     open_jobs = [j for j in state['seen'].values() if j.get('last_seen') == run_id or j['company'] in failed or j['company'] in soft]
     jobs = [dict(company=j['company'], title=j['title'], url=j['url'], sector=j['sector'],
-                 location=re.sub(r',?\s*(United States|USA)\b', '', j['location'] or ''),
-                 intern=is_intern(j['title']), first_seen=j['first_seen'], id=j['id'], source=j.get('source', 'board'))
+                 location=shown_location(j),
+                 intern=is_intern(j['title']), level=level_of(j['title']), miles=job_miles(j),
+                 first_seen=j['first_seen'], id=j['id'], source=j.get('source', 'board'))
             for j in open_jobs]
+    # only early-career-reachable roles within 50 miles (unknown locations stay, flagged in the app)
+    jobs = [j for j in jobs if j['level'] != 'senior' and (j['miles'] is None or j['miles'] <= MAX_MILES)]
     jobs.sort(key=lambda j: (j['first_seen'], j['company'], j['title']), reverse=True)
     counts = {}
     for j in jobs:
@@ -683,6 +812,7 @@ def careers_url(c):
         smartrecruiters=lambda: f"https://careers.smartrecruiters.com/{c.get('slug')}",
         workable=lambda: f"https://apply.workable.com/{c.get('slug')}/",
         talemetry=lambda: f"https://{c.get('host')}/jobs/search",
+        adp=lambda: f"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={c.get('cid')}&ccId={c.get('ccId')}&lang=en_US",
         dejobs=lambda: 'https://dejobs.org/jobs/?' + urllib.parse.urlencode({'location': 'WA', 'q': c.get('company', '')}),
         gem=lambda: f"https://jobs.gem.com/{c.get('slug')}",
         eightfold=lambda: f"https://{c.get('host')}/careers",

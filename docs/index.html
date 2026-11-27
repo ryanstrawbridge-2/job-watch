@@ -8,232 +8,696 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Job Watch">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#15191e" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f4f2ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111418" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
 <style>
-:root{--bg:#fff;--card:#fff;--fg:#1d2733;--muted:#5f6b7a;--line:#e3e7ec;--link:#1f5fbf;--chip:#eef1f5;--chipOn:#1f3a5f;--chipOnFg:#fff;--new:#d9480f;--tag:#e8f0fb;--star:#e0a100}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15191e;--card:#1b2026;--fg:#e6e9ed;--muted:#9aa5b1;--line:#2a3038;--link:#7fb0ff;--chip:#252b33;--chipOn:#7fb0ff;--chipOnFg:#0d1117;--new:#ff8a50;--tag:#22324a;--star:#f5c542}}
-*{box-sizing:border-box}
+:root{
+  --bg:#f4f2ee;--card:#fff;--fg:#1b1f23;--muted:#5e6670;--faint:#8a929b;--line:#e2ded7;--line2:#d3cec5;
+  --link:#0a58b8;--accent:#0a66c2;--on:#0f6b45;--onFg:#fff;--pill:#fff;--pillLine:#b9b3a8;
+  --energy:#2f7d4f;--energyBg:#e3f1e8;--aero:#2f5fa7;--aeroBg:#e4ecf8;--other:#6a5f50;--otherBg:#efebe4;
+  --intern:#7a3fa0;--internBg:#f1e7f8;--entry:#0f6b45;--entryBg:#e2f2ea;--mid:#8a5a00;--midBg:#f8eed9;
+  --new:#c2410c;--star:#c98a00;--shadow:0 1px 2px rgba(0,0,0,.06),0 0 0 1px var(--line);--scrim:rgba(20,20,20,.42);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111418;--card:#1a1e23;--fg:#e8eaed;--muted:#a3abb4;--faint:#7c858f;--line:#2a2f36;--line2:#363c44;
+  --link:#79b0ff;--accent:#4d97f0;--on:#3fb27f;--onFg:#08140e;--pill:#1a1e23;--pillLine:#4a515a;
+  --energy:#6fd39a;--energyBg:#1c3327;--aero:#8db6ff;--aeroBg:#1c2a42;--other:#c9bca8;--otherBg:#2c2822;
+  --intern:#d1a3f0;--internBg:#33243f;--entry:#6fd39a;--entryBg:#1c3327;--mid:#f0c060;--midBg:#3a2f17;
+  --new:#ff8a50;--star:#f5c542;--shadow:0 0 0 1px var(--line);--scrim:rgba(0,0,0,.6);
+}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%}
 html,body{overflow-x:hidden}
-body{background:var(--bg);color:var(--fg);font:16px/1.4 -apple-system,system-ui,sans-serif;margin:0}
-header{position:sticky;top:0;z-index:2;background:var(--bg);padding:calc(env(safe-area-inset-top) + 10px) 16px 8px;border-bottom:1px solid var(--line)}
-.top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
-h1{font-size:26px;margin:0}
-.upd{color:var(--muted);font-size:13px}
-input[type=search]{width:100%;margin:10px 0 8px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg);font-size:16px}
-.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
-.chips::-webkit-scrollbar{display:none}
-.chip{flex:none;border:0;border-radius:16px;padding:6px 12px;background:var(--chip);color:var(--fg);font-size:14px;font-weight:500}
-.chip.on{background:var(--chipOn);color:var(--chipOnFg)}
-main{max-width:760px;margin:0 auto;padding:0 16px calc(env(safe-area-inset-bottom) + 32px)}
-h2{font-size:18px;margin:22px 0 2px}
-h2 .n,.n{color:var(--muted);font-weight:400;font-size:14px}
-ul{list-style:none;margin:0;padding:0}
-li{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
-li .body{flex:1;min-width:0}
-li a{color:var(--link);text-decoration:none;font-weight:600}
-.meta{color:var(--muted);font-size:14px;margin-top:2px}
-.tag{display:inline-block;background:var(--tag);font-size:12px;padding:1px 7px;border-radius:8px;margin-left:4px;vertical-align:1px;color:var(--fg);font-weight:500}
+body{background:var(--bg);color:var(--fg);font:15px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+svg{display:block}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ic.sm{width:16px;height:16px}
+
+/* header */
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(env(safe-area-inset-top) + 8px) 0 0}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:36px}
+h1{font-size:24px;letter-spacing:-.01em;margin:0}
+.upd{border:0;background:none;color:var(--muted);font-size:12.5px;padding:6px 0 6px 8px;display:flex;align-items:center;gap:5px}
+.searchbox{position:relative;margin:8px 0 0}
+.searchbox .ic{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--faint)}
+input[type=search]{width:100%;padding:9px 36px 9px 36px;border:1px solid var(--line2);border-radius:10px;background:var(--card);color:var(--fg);font-size:16px;-webkit-appearance:none;appearance:none}
+input[type=search]::-webkit-search-cancel-button{display:none}
+input[type=search]:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:transparent}
+.clearq{position:absolute;right:4px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--faint);padding:8px;display:none}
+.clearq.show{display:block}
+.pills{display:flex;gap:8px;overflow-x:auto;padding:10px 16px 10px;margin:0 -16px;scrollbar-width:none}
+.pills::-webkit-scrollbar{display:none}
+.pill{flex:none;display:flex;align-items:center;gap:5px;border:1px solid var(--pillLine);background:var(--pill);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:600;color:var(--fg);white-space:nowrap}
+.pill.on{background:var(--on);border-color:var(--on);color:var(--onFg)}
+.pill .ic.sm{margin-right:-2px}
+.pill .badge{background:var(--onFg);color:var(--on);border-radius:999px;font-size:12px;min-width:18px;height:18px;line-height:18px;text-align:center;padding:0 5px}
+.pill.icon-only{padding:6px 10px}
+.hdrline{border-bottom:1px solid var(--line)}
+
+/* content */
+main{padding-bottom:calc(env(safe-area-inset-bottom) + 84px)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 0 6px;color:var(--muted);font-size:13.5px}
+.bar b{color:var(--fg);font-weight:600}
+.link{border:0;background:none;color:var(--link);font-weight:600;padding:4px 0;font-size:13.5px}
+.banner{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:var(--card);box-shadow:var(--shadow);border-radius:12px;padding:11px 14px;margin:6px 0 4px;font-size:14px}
+.banner .dot{width:9px;height:9px;border-radius:50%;background:var(--new);flex:none}
+.banner span{flex:1}
+.banner .ic{color:var(--faint)}
+.grp{font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:18px 2px 8px;display:flex;gap:6px}
+.grp .n{font-weight:500;color:var(--faint)}
+.cards{display:flex;flex-direction:column;gap:8px;list-style:none;margin:0;padding:0}
+.card{position:relative;display:flex;gap:12px;background:var(--card);box-shadow:var(--shadow);border-radius:12px;padding:12px 8px 12px 12px}
+.logo{flex:none;width:44px;height:44px;border-radius:9px;display:grid;place-items:center;font-weight:700;font-size:15px;letter-spacing:.02em;background:var(--otherBg);color:var(--other)}
+.logo.energy{background:var(--energyBg);color:var(--energy)}
+.logo.aero{background:var(--aeroBg);color:var(--aero)}
+.cbody{flex:1;min-width:0}
+.title{color:var(--link);font-weight:650;font-size:15.5px;line-height:1.3;text-decoration:none;display:block}
+.title::after{content:"";position:absolute;inset:0;border-radius:12px}
+.card.seen .title{color:var(--muted)}
+.co{font-size:14px;margin-top:2px;color:var(--fg)}
+.loc{font-size:13.5px;color:var(--muted);margin-top:1px}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.tag{font-size:11.5px;font-weight:650;padding:2px 7px;border-radius:6px;background:var(--otherBg);color:var(--other)}
+.tag.intern{background:var(--internBg);color:var(--intern)}
+.tag.entry{background:var(--entryBg);color:var(--entry)}
+.tag.mid{background:var(--midBg);color:var(--mid)}
+.tag.energy{background:var(--energyBg);color:var(--energy)}
+.tag.aero{background:var(--aeroBg);color:var(--aero)}
 .tag.new{background:var(--new);color:#fff}
-.sec{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
-.btns{display:flex;gap:2px;flex:none}
-.icon{border:0;background:none;color:var(--muted);font-size:20px;line-height:1;padding:4px 6px;min-width:36px;min-height:36px}
-.icon.on{color:var(--star)}
-.empty{color:var(--muted);padding:24px 0}
-.warn{color:#b5651d;font-size:14px;margin-top:14px}
-footer{margin-top:28px;font-size:13px;color:var(--muted)}
-footer a{color:var(--link)}
-.more{display:block;width:100%;margin:14px 0;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg);font-size:15px}
+.found{font-size:12.5px;color:var(--faint);margin-top:6px}
+.found .newtxt{color:var(--new);font-weight:650}
+.acts{display:flex;flex-direction:column;gap:0;flex:none;position:relative;z-index:1;margin:-4px 0}
+.act{border:0;background:none;color:var(--faint);width:40px;height:40px;display:grid;place-items:center;border-radius:8px}
+.act:active{background:var(--bg)}
+.act.on{color:var(--star)}
+.act.on .ic{fill:currentColor}
+.empty{color:var(--muted);text-align:center;padding:40px 12px;line-height:1.5}
+.empty b{display:block;color:var(--fg);font-size:16px;margin-bottom:4px}
+.more{display:block;width:100%;margin:14px 0;padding:12px;border:1px solid var(--line2);border-radius:12px;background:var(--card);color:var(--fg);font-weight:600}
+details.box{background:var(--card);box-shadow:var(--shadow);border-radius:12px;margin:8px 0;padding:0 14px}
+details.box summary{list-style:none;padding:12px 0;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+details.box summary::-webkit-details-marker{display:none}
+details.box summary .ic{margin-left:auto;color:var(--faint);transition:transform .15s}
+details.box[open] summary .ic{transform:rotate(90deg)}
+.plist{list-style:none;margin:0;padding:0 0 6px}
+.plist li{padding:9px 0;border-top:1px solid var(--line)}
+.plist a{color:var(--link);font-weight:600;text-decoration:none}
+.sub{font-size:13px;color:var(--muted);margin-top:2px}
+.note{font-size:13px;color:var(--muted);line-height:1.5}
+.warn{color:var(--mid)}
+footer{margin:26px 2px 0;font-size:12.5px;color:var(--faint);line-height:1.5}
+
+/* segmented */
+.seg{display:flex;background:var(--line);border-radius:9px;padding:2px;margin:10px 0 10px}
+.seg button{flex:1;border:0;background:none;border-radius:7px;padding:6px 8px;font-size:13.5px;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--card);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+
+/* list rows for companies / news */
+.rows{list-style:none;margin:0;padding:0;background:var(--card);box-shadow:var(--shadow);border-radius:12px;overflow:hidden}
+.rows li{display:flex;align-items:center;gap:10px;padding:11px 14px;border-top:1px solid var(--line)}
+.rows li:first-child{border-top:0}
+.rows .rb{flex:1;min-width:0}
+.rows a{color:var(--link);font-weight:600;text-decoration:none}
+.go{flex:none;border:1px solid var(--line2);background:var(--card);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:600;color:var(--fg);white-space:nowrap}
+
+/* tab bar */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:color-mix(in srgb,var(--card) 92%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:4px 0 calc(env(safe-area-inset-bottom) + 2px)}
+nav.tabs .in{max-width:520px;margin:0 auto;display:flex}
+nav.tabs button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 0 4px;font-size:11px;font-weight:600;color:var(--faint);position:relative}
+nav.tabs button.on{color:var(--fg)}
+nav.tabs .ic{width:23px;height:23px}
+nav.tabs .cnt{position:absolute;top:1px;left:calc(50% + 7px);background:var(--new);color:#fff;font-size:10.5px;border-radius:999px;min-width:17px;height:17px;line-height:17px;padding:0 4px}
+
+/* bottom sheet */
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:20;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.show{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:21;max-width:640px;margin:0 auto;background:var(--card);border-radius:16px 16px 0 0;max-height:88vh;display:flex;flex-direction:column;transform:translateY(105%);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.sheet.show{transform:none}
+.sheet .grab{width:38px;height:5px;border-radius:3px;background:var(--line2);margin:8px auto 2px}
+.sheet .sh{display:flex;align-items:center;justify-content:space-between;padding:6px 16px 10px;border-bottom:1px solid var(--line)}
+.sheet .sh h3{margin:0;font-size:17px}
+.sheet .x{border:0;background:none;padding:6px;color:var(--muted)}
+.sheet .sb{overflow-y:auto;padding:4px 16px 12px;-webkit-overflow-scrolling:touch}
+.sheet .sf{display:flex;gap:10px;padding:12px 16px calc(env(safe-area-inset-bottom) + 12px);border-top:1px solid var(--line)}
+.sheet .sf button{flex:1;border-radius:999px;padding:12px;font-weight:700;font-size:15px}
+.btn2{border:1px solid var(--line2);background:var(--card)}
+.btn1{border:0;background:var(--accent);color:#fff}
+.fs h4{font-size:15px;margin:16px 0 4px}
+.opt{display:flex;align-items:center;gap:12px;padding:10px 0;font-size:15px;border-bottom:1px solid var(--line);width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left}
+.opt:last-child{border-bottom:0}
+.opt .lbl{flex:1}
+.opt .cnt{color:var(--faint);font-size:13.5px}
+.mark{flex:none;width:22px;height:22px;border:2px solid var(--pillLine);display:grid;place-items:center;color:transparent}
+.mark.radio{border-radius:50%}
+.mark.box{border-radius:6px}
+.opt.sel .mark{border-color:var(--on);background:var(--on);color:var(--onFg)}
+.opt.sel .mark.radio{background:none;box-shadow:inset 0 0 0 4px var(--card);background:var(--on)}
+.opt.sel .mark.radio .ic{display:none}
+.coSearch{width:100%;margin:8px 0 2px;padding:8px 12px;border:1px solid var(--line2);border-radius:9px;background:var(--bg);color:var(--fg);font-size:16px}
+.showall{border:0;background:none;color:var(--link);font-weight:600;padding:10px 0}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 76px);transform:translate(-50%,20px);background:#22262b;color:#fff;padding:10px 10px 10px 16px;border-radius:10px;font-size:14px;display:flex;gap:14px;align-items:center;z-index:30;opacity:0;pointer-events:none;transition:all .2s;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{border:0;background:none;color:#8fc1ff;font-weight:700;padding:4px 6px}
+@media (min-width:700px){.card{padding:14px 10px 14px 14px}}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m10 7 5 5-5 5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7"/></symbol>
+  <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M7 4h10a1 1 0 0 1 1 1v15l-6-4-6 4V5a1 1 0 0 1 1-1z"/></symbol>
+  <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c5 0 8.5 4.5 9.5 6a15 15 0 0 1-2.7 3.2M6.5 7.6C4.5 8.9 3.1 10.8 2.5 12c1 1.5 4.5 6 9.5 6 1.5 0 2.9-.4 4.1-1"/><path d="M9.9 10a3 3 0 0 0 4.1 4.1"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12C3.5 10.5 7 6 12 6s8.5 4.5 9.5 6c-1 1.5-4.5 6-9.5 6s-8.5-4.5-9.5-6z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-brief" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 13h18"/></symbol>
+  <symbol id="i-news" viewBox="0 0 24 24"><path d="M5 4h12a1 1 0 0 1 1 1v14a1 1 0 0 0 1 1H6a2 2 0 0 1-2-2V5a1 1 0 0 1 1-1z"/><path d="M18 9h2v9a2 2 0 0 1-2 2M8 8h6M8 12h6M8 16h4"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><path d="M4 20V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v15M14 9h5a1 1 0 0 1 1 1v10M2 20h20M8 8h2M8 12h2M8 16h2M17 13h0M17 16h0"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.5-4.5M4 4v3h3M4 13a8 8 0 0 0 14.5 4.5M20 20v-3h-3"/></symbol>
+</svg>
+
 <header>
-  <div class="top"><h1>Job Watch</h1><span class="upd" id="upd">Loading…</span></div>
-  <input type="search" id="q" placeholder="Search title, company, city" autocomplete="off">
-  <div class="chips" id="chips"></div>
+  <div class="wrap">
+    <div class="top"><h1 id="h1">Jobs</h1><button class="upd" id="upd" aria-label="Reload"><span id="updt">Loading…</span><svg class="ic sm"><use href="#i-refresh"/></svg></button></div>
+    <div class="searchbox"><svg class="ic"><use href="#i-search"/></svg>
+      <input type="search" id="q" placeholder="Search title, company, city" autocomplete="off" enterkeyhint="search">
+      <button class="clearq" id="clearq" aria-label="Clear search"><svg class="ic sm"><use href="#i-x"/></svg></button></div>
+    <div class="pills" id="pills"></div>
+  </div>
+  <div class="hdrline"></div>
 </header>
-<main id="list"><p class="empty">Loading…</p></main>
+<main><div class="wrap" id="list"><p class="empty">Loading…</p></div></main>
+
+<nav class="tabs" aria-label="Sections"><div class="in" id="tabs"></div></nav>
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="shTitle">
+  <div class="grab"></div>
+  <div class="sh"><h3 id="shTitle"></h3><button class="x" data-sheet="close" aria-label="Close"><svg class="ic"><use href="#i-x"/></svg></button></div>
+  <div class="sb" id="shBody"></div>
+  <div class="sf"><button class="btn2" data-sheet="reset">Reset</button><button class="btn1" data-sheet="apply" id="shApply">Show results</button></div>
+</div>
+<div class="toast" id="toast"><span id="toastMsg"></span><button id="toastUndo">Undo</button></div>
+
 <script>
-const SECT = { energy: 'Energy', aero: 'Aero & space', other: 'Other' };
-const FILTERS = [
-  ['new', 'New'], ['all', 'All open'], ['energy', 'Energy'], ['aero', 'Aero & space'],
-  ['intern', 'Internships'], ['other', 'Other'], ['news', 'News'], ['saved', 'Saved'], ['companies', 'Companies'], ['hidden', 'Hidden'],
-];
+const $ = (id) => document.getElementById(id);
+const icon = (n, cls = '') => `<svg class="ic ${cls}"><use href="#i-${n}"/></svg>`;
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const store = {
   get(k, d) { try { const v = localStorage.getItem('jw.' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem('jw.' + k, JSON.stringify(v)); } catch (e) {} },
 };
+const pt = (ms) => new Date(ms).toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+const today = () => pt(Date.now());
+const daysAgo = (n) => pt(Date.now() - n * 864e5);
+
+const SECT = { energy: 'Energy', aero: 'Aero & space', other: 'Other engineering' };
+const SECT_SHORT = { energy: 'Energy', aero: 'Aero & space', other: 'Other' };
+const LEVEL = { intern: 'Internship / co-op', entry: 'Entry level', mid: 'Mid level (II)', none: 'Level not stated' };
+const LEVEL_TAG = { intern: 'Internship', entry: 'Entry level', mid: 'Mid level' };
+const DATES = [['any', 'Any time'], ['visit', 'Since my last visit'], ['0', 'Found today'], ['3', 'Past 3 days'], ['7', 'Past week'], ['30', 'Past month']];
+const MILES = [[10, 'Within 10 mi'], [25, 'Within 25 mi'], [50, 'Within 50 mi']];
+const SORTS = [['new', 'Newest first'], ['near', 'Closest to Seattle'], ['sector', 'Energy & aero first']];
+const DEFAULTS = { date: 'any', levels: [], sectors: [], disc: [], miles: 50, companies: [], sort: 'new', unknown: true };
+// type of engineering, from the title (a role can be more than one)
+const DISC = [
+  ['mech', 'Mechanical & design', /mechanic|mechanism|thermal|fluid|propulsion|tooling|valve|hvac|piping|packaging|product design|design engineer|turbo|structures? (design|engineer)|cad\b|engine\b/i],
+  ['elec', 'Electrical & electronics', /electric|electronic|avionics|\bpower\b|\brf\b|pcb|harness|\bemc\b|silicon|analog|asic|fpga|hardware|grid|substation|scada|protection|instrument/i],
+  ['mfg', 'Manufacturing & quality', /manufactur|production|process|industrial|automation|quality|supplier|reliability|weld|additive|machin|composite|\bnc\b|operational excellence|materials/i],
+  ['test', 'Test & integration', /test|integration|validation|verification|commissioning|\blab\b|\bi&t\b|\bai&t\b/i],
+  ['sys', 'Systems, GNC & controls', /systems? engineer|\bgnc\b|guidance|navigation|mission|controls?\b|robotic|mechatronic/i],
+  ['civil', 'Civil, structural & construction', /civil|structural|geotech|transportation|water|environmental|construction|project engineer|field engineer|bridge|land develop|building|\beit\b|in training|fire protection|traffic|rail/i],
+];
+const discOf = (j) => (j._disc ??= DISC.filter((d) => d[2].test(j.title)).map((d) => d[0]).concat([]).filter(Boolean));
+
 let data = null;
-let filter = store.get('filter', 'new');
+let tab = store.get('tab', 'jobs');
+if (!['jobs', 'saved', 'news', 'companies'].includes(tab)) tab = 'jobs';
+let F = Object.assign({}, DEFAULTS, store.get('filters2', {}));
 let saved = new Set(store.get('saved', []));
 let hidden = new Set(store.get('hidden', []));
-let limit = 150;
-// "new since last visit": anything first seen after the day you last opened the app
-const lastVisit = store.get('lastVisitDay', null);
+let viewed = new Set(store.get('viewed', []));
+let savedSeg = 'saved', coSector = 'all', limit = 60;
+let draft = null, sheetKind = null, coQuery = '', coAll = false;
 
-const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const dayLabel = (d) => {
-  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
-  const y = new Date(Date.now() - 864e5).toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
-  if (d === today) return 'Today';
-  if (d === y) return 'Yesterday';
-  return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-};
+// "New" = ids that weren't there the last time you opened the app
+let known = null;          // Set of ids from earlier visits (null on the very first visit)
+let lastOpen = 0;
+// A visit is a stretch of use with no gap over an hour. "New" compares against the previous visit,
+// so reopening or reloading the app a few minutes later keeps the same New badges.
+function rollVisit() {
+  const cur = store.get('visitCur', null), now = Date.now();
+  let prev = store.get('visitPrev', null);
+  if (cur && now - cur.last > 36e5) prev = cur;
+  const ids = data.jobs.map((j) => j.id);
+  const keep = cur && now - cur.last <= 36e5 ? cur : { start: now };
+  store.set('visitPrev', prev);
+  store.set('visitCur', { start: keep.start, last: now, ids: [...new Set([...(keep.ids || []), ...ids])] });
+  known = prev ? new Set(prev.ids) : null;
+  lastOpen = prev ? prev.last : 0;
+}
+setInterval(() => { const c = store.get('visitCur', null); if (c && !document.hidden) { c.last = Date.now(); store.set('visitCur', c); } }, 6e4);
+const isBase = (j) => j.first_seen === data.baseline_date;
+const isNew = (j) => !isBase(j) && (known ? !known.has(j.id) : j.first_seen >= daysAgo(1));
+
+// ---------- filtering ----------
+function passes(j, f, skip) {
+  if (hidden.has(j.id)) return false;
+  if (skip !== 'date' && f.date !== 'any') {
+    if (f.date === 'visit') { if (!isNew(j)) return false; }
+    else if (isBase(j) || j.first_seen < daysAgo(+f.date)) return false;
+  }
+  if (skip !== 'levels' && f.levels.length && !f.levels.includes(j.level)) return false;
+  if (skip !== 'sectors' && f.sectors.length && !f.sectors.includes(j.sector)) return false;
+  if (skip !== 'disc' && f.disc.length && !discOf(j).some((d) => f.disc.includes(d))) return false;
+  if (skip !== 'miles') {
+    if (j.miles == null) { if (!f.unknown) return false; }
+    else if (j.miles > f.miles) return false;
+  }
+  if (skip !== 'companies' && f.companies.length && !f.companies.includes(j.company)) return false;
+  return true;
+}
+function matchQ(j, words) {
+  if (!words.length) return true;
+  const hay = (j.title + ' ' + j.company + ' ' + j.location).toLowerCase();
+  return words.every((w) => hay.includes(w));
+}
+const qWords = () => $('q').value.toLowerCase().split(/\s+/).filter(Boolean);
+const filtered = (f = F, skip) => { const w = qWords(); return data.jobs.filter((j) => passes(j, f, skip) && matchQ(j, w)); };
 const rank = { energy: 0, aero: 1, other: 2 };
-
-function renderChips() {
-  document.getElementById('chips').innerHTML = FILTERS.map(([k, l]) => {
-    let n = '';
-    if (data) n = ' ' + (k === 'companies' ? data.companies.length + data.pages.length : k === 'news' ? (data.news || []).length : pick(k, '').length);
-    return `<button class="chip${k === filter ? ' on' : ''}" data-f="${k}">${l}<span class="n">${n}</span></button>`;
-  }).join('');
-}
-
-function pick(f, q) {
-  const words = q.toLowerCase().split(/\s+/).filter(Boolean);
-  return data.jobs.filter((j) => {
-    if (f === 'hidden') { if (!hidden.has(j.id)) return false; }
-    else if (hidden.has(j.id)) return false;
-    if (f === 'new' && j.first_seen === data.baseline_date) return false;
-    if (f === 'saved' && !saved.has(j.id)) return false;
-    if (f === 'intern' && !j.intern) return false;
-    if (SECT[f] && j.sector !== f) return false;
-    const hay = (j.title + ' ' + j.company + ' ' + j.location).toLowerCase();
-    return words.every((w) => hay.includes(w));
-  });
-}
-
-function row(j) {
-  const fresh = lastVisit && j.first_seen > lastVisit && j.first_seen !== data.baseline_date;
-  return `<li data-id="${esc(j.id)}"><div class="body">
-    <a href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.title)}</a>${j.intern ? '<span class="tag">Intern</span>' : ''}${fresh ? '<span class="tag new">New</span>' : ''}
-    <div class="meta">${esc(j.company)} · ${esc(j.location || 'location not listed')}${j.source === 'page' ? ' · from their careers page' : ''}</div>
-    <div class="sec">${SECT[j.sector] || ''}</div></div>
-    <div class="btns"><button class="icon${saved.has(j.id) ? ' on' : ''}" data-act="save" aria-label="Save">${saved.has(j.id) ? '★' : '☆'}</button>
-    <button class="icon" data-act="hide" aria-label="${hidden.has(j.id) ? 'Unhide' : 'Hide'}">${hidden.has(j.id) ? '↺' : '✕'}</button></div></li>`;
-}
-
-function pageChanges() {
-  const cutoff = new Date(Date.now() - 14 * 864e5).toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
-  return data.pages.filter((p) => p.changed && p.changed >= cutoff).sort((a, b) => b.changed.localeCompare(a.changed));
-}
-
-function renderNews(q) {
-  const words = q.toLowerCase().split(/\s+/).filter(Boolean);
-  const items = (data.news || []).filter((n) => words.every((w) => (n.title + ' ' + n.source).toLowerCase().includes(w)));
-  if (!items.length) return '<p class="empty">No news yet.</p>';
-  const watched = [...data.companies, ...data.pages].map((c) => c.name.split(' (')[0]).filter((x) => x.length > 3);
-  let h = '<p class="meta" style="margin-top:14px">Seattle-area hardware, space and energy companies raising money or opening sites. A funding round usually means hiring in the next few weeks, often before jobs are posted. Tell Claude to watch any company you see here that isn\'t tracked yet.</p>';
-  let day = null;
-  for (const n of items) {
-    if (n.first_seen !== day) { if (day) h += '</ul>'; h += `<h2>${n.first_seen === data.baseline_date ? 'Recent' : 'Found ' + dayLabel(n.first_seen)}</h2><ul>`; day = n.first_seen; }
-    const w = watched.find((c) => n.title.toLowerCase().includes(c.toLowerCase()));
-    const when = n.published ? new Date(n.published).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-    h += `<li><div class="body"><a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title)}</a>${w ? '<span class="tag">Watching</span>' : ''}
-      <div class="meta">${esc(n.source)}${when ? ' · ' + when : ''}</div></div></li>`;
+const lrank = { intern: 0, entry: 1, none: 2, mid: 3 };
+function collapse(js) {
+  const m = new Map();
+  for (const j of js) {
+    const k = j.company + '|' + j.title.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    const g = m.get(k);
+    if (g) g._grp.push(j); else { j._grp = [j]; m.set(k, j); }
   }
-  return h + '</ul>';
+  return [...m.values()];
+}
+function sortJobs(js, how) {
+  const byNew = (a, b) => (isBase(a) - isBase(b)) || b.first_seen.localeCompare(a.first_seen) || (rank[a.sector] - rank[b.sector]) || (lrank[a.level] - lrank[b.level]) || a.company.localeCompare(b.company);
+  if (how === 'near') return js.sort((a, b) => ((a.miles ?? 999) - (b.miles ?? 999)) || byNew(a, b));
+  if (how === 'sector') return js.sort((a, b) => (rank[a.sector] - rank[b.sector]) || byNew(a, b));
+  return js.sort(byNew);
+}
+function activeCount(f = F) {
+  return (f.date !== 'any') + (f.levels.length > 0) + (f.sectors.length > 0) + (f.disc.length > 0) + (f.miles !== 50 || !f.unknown) + (f.companies.length > 0) + (f.sort !== 'new');
 }
 
-function renderCompanies(q) {
-  const words = q.toLowerCase().split(/\s+/).filter(Boolean);
-  const ok = (c) => words.every((w) => (c.name + ' ' + (c.note || '')).toLowerCase().includes(w));
+// ---------- pieces ----------
+const coName = (c) => c.replace(/\s*\(.*\)\s*$/, '').replace(/\s*\/.*$/, '');
+function initials(c) {
+  const w = coName(c).replace(/[^A-Za-z0-9 &]/g, ' ').split(/\s+/).filter((x) => x && !/^(the|of|and|&|inc|llc|co)$/i.test(x));
+  return ((w[0] || '?')[0] + (w[1] ? w[1][0] : (w[0] || '').slice(1, 2))).toUpperCase();
+}
+function shortLoc(loc) {
+  if (!loc) return '';
+  const parts = loc.split(/;\s*/).map((s) => s.trim()).filter(Boolean);
+  if (parts.length < 2) return loc;
+  const local = parts.find((p) => /\bWA\b|Washington|Seattle|Puget/i.test(p)) || parts[0];
+  return `${local} +${parts.length - 1} more`;
+}
+function foundLabel(j) {
+  if (isBase(j)) return 'Open since tracking began';
+  const t = today(), y = daysAgo(1);
+  if (j.first_seen === t) return 'Found today';
+  if (j.first_seen === y) return 'Found yesterday';
+  const d = Math.round((new Date(t + 'T12:00') - new Date(j.first_seen + 'T12:00')) / 864e5);
+  return d < 14 ? `Found ${d} days ago` : 'Found ' + new Date(j.first_seen + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+function via(j) {
+  if (j.source === 'page') return ' · from their careers page';
+  if (j.id.startsWith('AZ|')) return ' · via Adzuna';
+  if (j.id.startsWith('ALL|')) return ' · via DirectEmployers';
+  return '';
+}
+function card(j) {
+  const nw = isNew(j);
+  const grp = j._grp && j._grp.length > 1 ? j._grp : null;
+  const ms = (grp || [j]).map((x) => x.miles).filter((x) => x != null);
+  const mi = ms.length ? Math.min(...ms) : null;
+  const dist = mi == null ? 'distance unknown' : mi <= 3 ? '' : `${mi} mi`;
+  const where = grp ? `${shortLoc(j.location).replace(/ \+\d+ more$/, '') || 'Several sites'} + ${grp.length - 1} more posting${grp.length > 2 ? 's' : ''}` : (shortLoc(j.location) || 'Location not listed');
+  const loc = [where, dist].filter(Boolean).join(' · ');
+  const seen = viewed.has(j.id);
+  const tags = [];
+  if (LEVEL_TAG[j.level]) tags.push(`<span class="tag ${j.level}">${LEVEL_TAG[j.level]}</span>`);
+  if (j.sector !== 'other') tags.push(`<span class="tag ${j.sector}">${SECT_SHORT[j.sector]}</span>`);
+  const sv = saved.has(j.id), hd = hidden.has(j.id);
+  return `<li class="card${seen ? ' seen' : ''}" data-id="${esc(j.id)}" data-ids="${esc((grp || [j]).map((x) => x.id).join(' '))}">
+    <div class="logo ${j.sector}" aria-hidden="true">${esc(initials(j.company))}</div>
+    <div class="cbody">
+      <a class="title" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.title)}</a>
+      <div class="co">${esc(coName(j.company))}</div>
+      <div class="loc" title="${esc(j.location)}">${esc(loc)}</div>
+      ${tags.length ? `<div class="tags">${tags.join('')}</div>` : ''}
+      <div class="found">${nw ? '<span class="newtxt">New</span> · ' : ''}${foundLabel(j)}${seen ? ' · Viewed' : ''}${via(j)}</div>
+    </div>
+    <div class="acts">
+      <button class="act${sv ? ' on' : ''}" data-act="save" aria-label="${sv ? 'Unsave' : 'Save'}" aria-pressed="${sv}">${icon('bookmark')}</button>
+      <button class="act" data-act="hide" aria-label="${hd ? 'Unhide' : 'Hide'}">${icon(hd ? 'eye' : 'eyeoff')}</button>
+    </div></li>`;
+}
+function listHtml(jobs, grouped) {
+  if (!jobs.length) return '';
+  let h = '', grp = null, shown = 0;
+  const key = (j) => (isBase(j) ? 'base' : j.first_seen);
+  const counts = {};
+  if (grouped) for (const j of jobs) counts[key(j)] = (counts[key(j)] || 0) + 1;
+  for (const j of jobs) {
+    if (shown >= limit) break;
+    if (grouped && key(j) !== grp) {
+      if (grp !== null) h += '</ul>';
+      grp = key(j);
+      const label = grp === 'base' ? 'Open when tracking started' : grp === today() ? 'Found today' : grp === daysAgo(1) ? 'Found yesterday' : 'Found ' + new Date(grp + 'T12:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+      h += `<div class="grp">${label}<span class="n">${counts[grp]}</span></div><ul class="cards">`;
+    } else if (!grouped && shown === 0) h += '<ul class="cards" style="margin-top:8px">';
+    h += card(j); shown++;
+  }
+  h += '</ul>';
+  if (jobs.length > limit) h += `<button class="more" id="more">Show more (${jobs.length - limit} left)</button>`;
+  return h;
+}
+
+// ---------- header pills ----------
+function pillsHtml() {
+  if (tab === 'jobs') {
+    const n = activeCount();
+    const lv = (k) => F.levels.length === 1 && F.levels[0] === k;
+    const early = F.levels.length === 2 && F.levels.includes('intern') && F.levels.includes('entry');
+    const dateOn = F.date !== 'any', secOn = F.sectors.length > 0, milesOn = F.miles !== 50 || !F.unknown, coOn = F.companies.length > 0;
+    const lvlOn = F.levels.length > 0 && !lv('intern') && !early;
+    const pill = (attrs, on, label, caret = true) => `<button class="pill${on ? ' on' : ''}" ${attrs}>${label}${caret ? icon('down', 'sm') : ''}</button>`;
+    return [
+      `<button class="pill icon-only${n ? ' on' : ''}" data-open="all" aria-label="All filters">${icon('filter', 'sm')}${n ? `<span class="badge">${n}</span>` : ''}</button>`,
+      pill('data-quick="intern"', lv('intern'), 'Internships', false),
+      pill('data-quick="early"', early, 'Intern + entry level', false),
+      pill('data-open="date"', dateOn, dateOn ? DATES.find((d) => d[0] === F.date)[1] : 'Date found'),
+      pill('data-open="levels"', lvlOn, lvlOn ? (F.levels.length === 1 ? LEVEL_TAG[F.levels[0]] || LEVEL[F.levels[0]] : `Experience (${F.levels.length})`) : 'Experience'),
+      pill('data-open="disc"', F.disc.length > 0, F.disc.length ? (F.disc.length === 1 ? DISC.find((d) => d[0] === F.disc[0])[1].split(' ')[0].replace(',', '') : `Type (${F.disc.length})`) : 'Engineering type'),
+      pill('data-open="sectors"', secOn, secOn ? (F.sectors.length === 1 ? SECT_SHORT[F.sectors[0]] : `Industry (${F.sectors.length})`) : 'Industry'),
+      pill('data-open="miles"', milesOn, milesOn ? `Within ${F.miles} mi` : 'Distance'),
+      pill('data-open="companies"', coOn, coOn ? (F.companies.length === 1 ? esc(coName(F.companies[0])) : `Companies (${F.companies.length})`) : 'Company'),
+    ].join('');
+  }
+  if (tab === 'companies') {
+    return [['all', 'All'], ['energy', 'Energy'], ['aero', 'Aero & space'], ['other', 'Other'], ['open', 'Hiring now']]
+      .map(([k, l]) => `<button class="pill${coSector === k ? ' on' : ''}" data-cos="${k}">${l}</button>`).join('');
+  }
+  return '';
+}
+
+// ---------- views ----------
+function viewJobs() {
+  const jobs = collapse(sortJobs(filtered(), F.sort));
+  const q = qWords().length > 0;
   let h = '';
-  for (const sec of ['energy', 'aero', 'other']) {
-    const cos = data.companies.filter((c) => c.sector === sec && ok(c)).sort((a, b) => (b.open - a.open) || a.name.localeCompare(b.name));
-    const pgs = data.pages.filter((p) => p.sector === sec && ok(p)).sort((a, b) => a.name.localeCompare(b.name));
-    if (!cos.length && !pgs.length) continue;
-    h += `<h2>${SECT[sec]} <span class="n">${cos.length + pgs.length}</span></h2><ul>`;
-    h += cos.map((c) => `<li><div class="body"><a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.name)}</a>
-      <div class="meta">${c.open ? c.open + ' open engineering role' + (c.open > 1 ? 's' : '') : 'Nothing open right now, watching'}${c.note ? ' · ' + esc(c.note) : ''}</div></div></li>`).join('');
-    h += pgs.map((p) => `<li><div class="body"><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.name)}</a>${p.changed ? '<span class="tag new">Page changed ' + dayLabel(p.changed) + '</span>' : ''}
-      <div class="meta">Careers page watched for changes${p.note ? ' · ' + esc(p.note) : ''}</div></div></li>`).join('');
-    h += '</ul>';
+  const n = activeCount() + (q ? 1 : 0);
+  h += `<div class="bar"><span><b>${jobs.length.toLocaleString()}</b> ${jobs.length === 1 ? 'role' : 'roles'}${n ? '' : ' within 50 mi of Seattle'}</span>${n ? '<button class="link" data-clear="1">Clear filters</button>' : `<button class="link" data-open="sort">${SORTS.find((s) => s[0] === F.sort)[1]}</button>`}</div>`;
+  if (F.date !== 'visit' && !q) {
+    const fresh = data.jobs.filter((j) => passes(j, F, 'date') && isNew(j)).length;
+    if (fresh) h += `<button class="banner" data-date="visit"><i class="dot"></i><span><b>${fresh} new</b> since ${known ? 'your last visit' : 'yesterday'}${lastOpen ? ' (' + new Date(lastOpen).toLocaleString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit' }) + ')' : ''}</span>${icon('right', 'sm')}</button>`;
   }
-  return h || '<p class="empty">No matches.</p>';
-}
-
-function render() {
-  renderChips();
-  const q = document.getElementById('q').value;
-  if (filter === 'news') {
-    document.getElementById('list').innerHTML = renderNews(q) + footer();
-    return;
-  }
-  if (filter === 'companies') {
-    document.getElementById('list').innerHTML = renderCompanies(q) + footer();
-    return;
-  }
-  const jobs = pick(filter, q).sort((a, b) => (b.first_seen.localeCompare(a.first_seen)) || (rank[a.sector] - rank[b.sector]) || (b.intern - a.intern) || a.company.localeCompare(b.company));
-  const el = document.getElementById('list');
-  let html = '';
-  if (filter === 'new' && !q) {
-    const pc = pageChanges();
-    if (pc.length) html += `<h2>Careers pages that changed <span class="n">${pc.length}</span></h2><p class="meta">These companies don't use a job board we can read. Their careers page changed, so something may have been posted.</p><ul>` +
-      pc.map((p) => `<li><div class="body"><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.name)}</a><span class="tag new">${dayLabel(p.changed)}</span>
-      <div class="meta">${esc((p.added || []).slice(0, 3).join(' · ').slice(0, 160))}</div></div></li>`).join('') + '</ul>';
+  if (!q && !F.companies.length && (F.date === 'any' || F.date === 'visit')) {
+    const cutoff = daysAgo(14);
+    const pc = data.pages.filter((p) => p.changed && p.changed >= cutoff && (!F.sectors.length || F.sectors.includes(p.sector))).sort((a, b) => b.changed.localeCompare(a.changed));
+    if (pc.length) h += `<details class="box"><summary>${pc.length} careers ${pc.length === 1 ? 'page' : 'pages'} changed in the last 2 weeks${icon('right', 'sm')}</summary>
+      <p class="note" style="margin:0 0 6px">These companies don't have a job board this app can read. Their careers page changed, so something may have been posted.</p>
+      <ul class="plist">${pc.map((p) => `<li><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.name)}</a><div class="sub">Changed ${foundLabel({ first_seen: p.changed }).replace('Found ', '').toLowerCase()}${(p.added || []).length ? ' · ' + esc([...new Set(p.added)].slice(0, 3).join(', ').slice(0, 120)) : ''}</div></li>`).join('')}</ul></details>`;
   }
   if (!jobs.length) {
-    html = `<p class="empty">${filter === 'new' && !q ? 'Nothing new yet. Tracking started ' + new Date(data.baseline_date + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }) + '. Anything posted after that shows up here, newest first. Tap "All open" to see everything open now.' : 'Nothing here.'}</p>`;
+    h += `<div class="empty"><b>No roles match</b>${F.date === 'visit' ? 'Nothing new since your last visit. The boards are checked twice a day.' : 'Try removing a filter or widening the distance.'}</div>`;
   } else {
-    let day = null, shown = 0;
-    for (const j of jobs) {
-      if (shown >= limit) break;
-      const d = j.first_seen === data.baseline_date ? 'base' : j.first_seen;
-      if (d !== day) {
-        if (day !== null) html += '</ul>';
-        const n = jobs.filter((x) => (x.first_seen === data.baseline_date ? 'base' : x.first_seen) === d).length;
-        html += `<h2>${d === 'base' ? 'Open when tracking started' : 'New ' + dayLabel(d)} <span class="n">${n}</span></h2><ul>`;
-        day = d;
-      }
-      html += row(j); shown++;
-    }
-    html += '</ul>';
-    if (jobs.length > limit) html += `<button class="more" id="more">Show ${Math.min(150, jobs.length - limit)} more (${jobs.length - limit} left)</button>`;
+    h += listHtml(jobs, F.sort === 'new');
   }
-  if (data.failed && data.failed.length) html += `<details class="warn"><summary>${data.failed.length} board${data.failed.length > 1 ? 's' : ''} couldn't be checked last time</summary>${esc(data.failed.map((n) => n.replace(/\s*\(.*\)/, '')).join(', '))}. Their roles stay listed until the next good check.</details>`;
-  el.innerHTML = html + footer();
+  if (data.failed && data.failed.length) h += `<details class="box"><summary class="warn">${data.failed.length} board${data.failed.length > 1 ? 's' : ''} couldn't be checked last time${icon('right', 'sm')}</summary><p class="note" style="margin:0 0 12px">${esc(data.failed.map((x) => x.replace(/\s*\(.*\)/, '')).join(', '))}. Their roles stay listed until the next good check.</p></details>`;
+  return h + footer();
 }
-
+function viewSaved() {
+  const w = qWords();
+  const pool = savedSeg === 'saved' ? data.jobs.filter((j) => saved.has(j.id)) : data.jobs.filter((j) => hidden.has(j.id));
+  const jobs = sortJobs(pool.filter((j) => matchQ(j, w)), 'new');
+  for (const j of jobs) j._grp = [j];
+  const gone = savedSeg === 'saved' ? [...saved].filter((id) => !data.jobs.some((j) => j.id === id)).length : 0;
+  let h = `<div class="seg" role="tablist"><button class="${savedSeg === 'saved' ? 'on' : ''}" data-seg="saved">Saved (${data.jobs.filter((j) => saved.has(j.id)).length})</button><button class="${savedSeg === 'hidden' ? 'on' : ''}" data-seg="hidden">Hidden (${data.jobs.filter((j) => hidden.has(j.id)).length})</button></div>`;
+  if (!jobs.length) h += `<div class="empty"><b>${savedSeg === 'saved' ? 'Nothing saved yet' : 'Nothing hidden'}</b>${savedSeg === 'saved' ? 'Tap the bookmark on any role to keep it here.' : 'Roles you hide from the list show up here so you can bring them back.'}</div>`;
+  else { const keep = limit; limit = 1e6; h += listHtml(jobs, false); limit = keep; }
+  if (gone) h += `<p class="note" style="margin-top:14px">${gone} saved ${gone === 1 ? 'role has' : 'roles have'} closed and dropped off the boards.</p>`;
+  return h + footer();
+}
+function viewNews() {
+  const w = qWords();
+  const items = (data.news || []).filter((n) => w.every((x) => (n.title + ' ' + n.source).toLowerCase().includes(x)));
+  let h = `<p class="note" style="margin:12px 2px 4px">Seattle-area hardware, space and energy companies raising money or opening sites. A funding round often means hiring in the next few weeks, sometimes before jobs are posted.</p>`;
+  if (!items.length) return h + '<div class="empty"><b>No news yet</b></div>' + footer();
+  const watched = [...data.companies, ...data.pages].map((c) => coName(c.name)).filter((x) => x.length > 3);
+  let day = null;
+  for (const n of items) {
+    if (n.first_seen !== day) {
+      if (day) h += '</ul>';
+      h += `<div class="grp">${n.first_seen === data.baseline_date ? 'Earlier' : foundLabel(n)}</div><ul class="rows">`;
+      day = n.first_seen;
+    }
+    const wc = watched.find((c) => n.title.toLowerCase().includes(c.toLowerCase()));
+    const when = n.published ? new Date(n.published).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+    h += `<li><div class="rb"><a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title)}</a><div class="sub">${esc(n.source)}${when ? ' · ' + when : ''}${wc ? ' · <b>Watching ' + esc(wc) + '</b>' : ''}</div></div></li>`;
+  }
+  return h + '</ul>' + footer();
+}
+function viewCompanies() {
+  const w = qWords();
+  const ok = (c) => w.every((x) => (c.name + ' ' + (c.note || '')).toLowerCase().includes(x));
+  const open = {};
+  for (const j of data.jobs) if (!hidden.has(j.id)) open[j.company] = (open[j.company] || 0) + 1;
+  let h = '';
+  for (const sec of ['energy', 'aero', 'other']) {
+    if (coSector !== 'all' && coSector !== 'open' && coSector !== sec) continue;
+    const cos = data.companies.filter((c) => c.sector === sec && ok(c) && !/sweep|search\)/i.test(c.name) && (coSector !== 'open' || open[c.name])).sort((a, b) => ((open[b.name] || 0) - (open[a.name] || 0)) || a.name.localeCompare(b.name));
+    const pgs = coSector === 'open' ? [] : data.pages.filter((p) => p.sector === sec && ok(p)).sort((a, b) => a.name.localeCompare(b.name));
+    if (!cos.length && !pgs.length) continue;
+    h += `<div class="grp">${SECT[sec]}<span class="n">${cos.length + pgs.length}</span></div><ul class="rows">`;
+    h += cos.map((c) => { const n = open[c.name] || 0; return `<li><div class="rb"><a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.name)}</a><div class="sub">${n ? n + ' open role' + (n > 1 ? 's' : '') : 'Nothing open right now, still watching'}</div></div>${n ? `<button class="go" data-co="${esc(c.name)}">See roles</button>` : ''}</li>`; }).join('');
+    h += pgs.map((p) => `<li><div class="rb"><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.name)}</a><div class="sub">Careers page watched for changes${p.changed ? ' · changed ' + foundLabel({ first_seen: p.changed }).replace('Found ', '').toLowerCase() : ''}</div></div></li>`).join('');
+    h += '</ul>';
+  }
+  return (h || '<div class="empty"><b>No matches</b></div>') + footer();
+}
 function footer() {
-  return `<footer><p>Watching ${data.companies.length + data.pages.length} Seattle-area companies twice a day: ${data.companies.length} job boards plus ${data.pages.length} careers pages checked for changes. Closed postings drop off. Saved and hidden roles stay on this phone.</p></footer>`;
+  const sweeps = data.companies.filter((c) => /sweep|search\)/i.test(c.name)).length;
+  return `<footer>Watching ${data.companies.length - sweeps + data.pages.length} Seattle-area companies twice a day (${data.companies.length - sweeps} job boards, ${data.pages.length} careers pages), plus ${sweeps} searches across every Washington employer. Senior, staff and principal roles and anything over 50 miles from Seattle are left out. Saved and hidden roles stay on this phone.</footer>`;
 }
 
-document.getElementById('chips').addEventListener('click', (e) => {
-  const b = e.target.closest('[data-f]'); if (!b) return;
-  filter = b.dataset.f; store.set('filter', filter); limit = 150; render(); window.scrollTo(0, 0);
+const TABS = [['jobs', 'Jobs', 'brief'], ['saved', 'Saved', 'bookmark'], ['news', 'News', 'news'], ['companies', 'Companies', 'building']];
+function render() {
+  $('h1').textContent = { jobs: 'Jobs', saved: 'Saved', news: 'News', companies: 'Companies' }[tab];
+  $('q').placeholder = { jobs: 'Search title, company, city', saved: 'Search saved roles', news: 'Search news', companies: 'Search companies' }[tab];
+  $('clearq').classList.toggle('show', !!$('q').value);
+  const ph = pillsHtml();
+  $('pills').innerHTML = ph; $('pills').style.display = ph ? '' : 'none';
+  if (!ph) $('pills').previousElementSibling.style.marginBottom = '10px'; else $('pills').previousElementSibling.style.marginBottom = '';
+  const newN = data ? data.jobs.filter((j) => !hidden.has(j.id) && isNew(j) && passes(j, Object.assign({}, F, { date: 'any' }))).length : 0;
+  $('tabs').innerHTML = TABS.map(([k, l, ic]) => `<button class="${tab === k ? 'on' : ''}" data-tab="${k}" aria-current="${tab === k ? 'page' : 'false'}">${icon(ic)}${l}${k === 'jobs' && newN && tab !== 'jobs' ? `<span class="cnt">${newN > 99 ? '99+' : newN}</span>` : ''}</button>`).join('');
+  if (!data) return;
+  $('list').innerHTML = tab === 'jobs' ? viewJobs() : tab === 'saved' ? viewSaved() : tab === 'news' ? viewNews() : viewCompanies();
+}
+
+// ---------- bottom sheet ----------
+const optRow = (attrs, sel, label, cnt, kind) => `<button class="opt${sel ? ' sel' : ''}" ${attrs}><span class="mark ${kind}">${icon('check', 'sm')}</span><span class="lbl">${label}</span>${cnt != null ? `<span class="cnt">${cnt}</span>` : ''}</button>`;
+function countBy(field, skip) {
+  const c = {}; const w = qWords();
+  for (const j of collapse(data.jobs.filter((j) => passes(j, draft, skip) && matchQ(j, w)))) c[j[field]] = (c[j[field]] || 0) + 1;
+  return c;
+}
+function secDate() {
+  const w = qWords();
+  const cnt = (k) => collapse(data.jobs.filter((j) => passes(j, Object.assign({}, draft, { date: k })) && matchQ(j, w))).length;
+  return DATES.map(([k, l]) => optRow(`data-set="date" data-v="${k}"`, draft.date === k, l, cnt(k), 'radio')).join('') +
+    '<p class="note" style="margin:8px 0 0">The date a role first showed up here. Boards are checked about twice a day, so it is usually within hours of posting.</p>';
+}
+function secLevels() {
+  const c = countBy('level', 'levels');
+  return Object.entries(LEVEL).map(([k, l]) => optRow(`data-tog="levels" data-v="${k}"`, draft.levels.includes(k), l, c[k] || 0, 'box')).join('') +
+    '<p class="note" style="margin:8px 0 0">Senior, staff, principal, lead, III+ and 3+ year roles are already left out. "Level not stated" covers titles like "Mechanical Engineer" with no level.</p>';
+}
+function secDisc() {
+  const w = qWords(); const c = {};
+  for (const j of collapse(data.jobs.filter((j) => passes(j, draft, 'disc') && matchQ(j, w)))) for (const d of discOf(j)) c[d] = (c[d] || 0) + 1;
+  return DISC.map(([k, l]) => optRow(`data-tog="disc" data-v="${k}"`, draft.disc.includes(k), l, c[k] || 0, 'box')).join('') +
+    '<p class="note" style="margin:8px 0 0">Based on the job title, so a role can be in more than one.</p>';
+}
+function secSectors() {
+  const c = countBy('sector', 'sectors');
+  return Object.entries(SECT).map(([k, l]) => optRow(`data-tog="sectors" data-v="${k}"`, draft.sectors.includes(k), l, c[k] || 0, 'box')).join('');
+}
+function secMiles() {
+  const w = qWords();
+  const cnt = (m) => collapse(data.jobs.filter((j) => passes(j, Object.assign({}, draft, { miles: m }), null) && matchQ(j, w))).length;
+  const unk = data.jobs.filter((j) => j.miles == null && passes(j, Object.assign({}, draft, { unknown: true }), 'miles') && matchQ(j, w)).length;
+  return MILES.map(([m, l]) => optRow(`data-set="miles" data-v="${m}"`, draft.miles === m, l, cnt(m), 'radio')).join('') +
+    optRow('data-flip="unknown"', draft.unknown, 'Include roles with no location listed', unk, 'box') +
+    '<p class="note" style="margin:8px 0 0">Straight-line distance from downtown Seattle to the closest listed site.</p>';
+}
+function secCompanies() {
+  const c = countBy('company', 'companies');
+  let names = Object.keys(c).sort((a, b) => (c[b] - c[a]) || a.localeCompare(b));
+  for (const s of draft.companies) if (!names.includes(s)) names.unshift(s);
+  const q = coQuery.toLowerCase();
+  if (q) names = names.filter((n) => n.toLowerCase().includes(q));
+  const total = names.length;
+  if (!coAll && !q) names = [...draft.companies, ...names.filter((n) => !draft.companies.includes(n))].slice(0, Math.max(10, draft.companies.length));
+  return `<input class="coSearch" id="coSearch" type="search" placeholder="Find a company" value="${esc(coQuery)}" autocomplete="off">` +
+    (names.map((n) => optRow(`data-tog="companies" data-v="${esc(n)}"`, draft.companies.includes(n), esc(coName(n)), c[n] || 0, 'box')).join('') || '<p class="note">No company by that name has open roles.</p>') +
+    (!coAll && !q && total > names.length ? `<button class="showall" data-coall="1">Show all ${total} companies</button>` : '');
+}
+function secSort() { return SORTS.map(([k, l]) => optRow(`data-set="sort" data-v="${k}"`, draft.sort === k, l, null, 'radio')).join(''); }
+const SHEETS = {
+  all: ['All filters', () => `<div class="fs"><h4>Sort by</h4>${secSort()}<h4>Date found</h4>${secDate()}<h4>Experience level</h4>${secLevels()}<h4>Engineering type</h4>${secDisc()}<h4>Industry</h4>${secSectors()}<h4>Distance</h4>${secMiles()}<h4>Company</h4>${secCompanies()}</div>`],
+  date: ['Date found', secDate], levels: ['Experience level', secLevels], sectors: ['Industry', secSectors], disc: ['Engineering type', secDisc],
+  miles: ['Distance from Seattle', secMiles], companies: ['Company', secCompanies], sort: ['Sort by', secSort],
+};
+function drawSheet(keepScroll) {
+  const sb = $('shBody'), top = sb.scrollTop;
+  const fo = document.activeElement && document.activeElement.id === 'coSearch';
+  const sel = fo ? document.activeElement.selectionStart : 0;
+  $('shTitle').textContent = SHEETS[sheetKind][0];
+  sb.innerHTML = SHEETS[sheetKind][1]();
+  const n = collapse(data.jobs.filter((j) => passes(j, draft) && matchQ(j, qWords()))).length;
+  $('shApply').textContent = `Show ${n.toLocaleString()} result${n === 1 ? '' : 's'}`;
+  if (keepScroll) sb.scrollTop = top;
+  if (fo) { const el = $('coSearch'); el.focus(); el.setSelectionRange(sel, sel); }
+}
+function openSheet(kind) {
+  sheetKind = kind; draft = JSON.parse(JSON.stringify(F)); coQuery = ''; coAll = false;
+  drawSheet(); $('shBody').scrollTop = 0;
+  $('scrim').classList.add('show'); $('sheet').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeSheet() {
+  $('scrim').classList.remove('show'); $('sheet').classList.remove('show');
+  document.body.style.overflow = ''; sheetKind = null;
+}
+function commit(f) { F = f; store.set('filters2', F); limit = 60; render(); window.scrollTo(0, 0); }
+
+$('sheet').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.sheet === 'close') return closeSheet();
+  if (b.dataset.sheet === 'apply') { commit(draft); return closeSheet(); }
+  if (b.dataset.sheet === 'reset') {
+    const keep = sheetKind === 'all' ? {} : { date: draft.date, levels: draft.levels, sectors: draft.sectors, disc: draft.disc, miles: draft.miles, unknown: draft.unknown, companies: draft.companies, sort: draft.sort };
+    const reset = { date: ['date'], levels: ['levels'], sectors: ['sectors'], disc: ['disc'], miles: ['miles', 'unknown'], companies: ['companies'], sort: ['sort'] }[sheetKind];
+    if (reset) for (const k of reset) delete keep[k];
+    draft = Object.assign(JSON.parse(JSON.stringify(DEFAULTS)), keep);
+    return drawSheet(true);
+  }
+  if (b.dataset.coall) { coAll = true; return drawSheet(true); }
+  const v = b.dataset.v;
+  if (b.dataset.set) { draft[b.dataset.set] = b.dataset.set === 'miles' ? +v : v; }
+  else if (b.dataset.tog) { const a = draft[b.dataset.tog]; const i = a.indexOf(v); i >= 0 ? a.splice(i, 1) : a.push(v); }
+  else if (b.dataset.flip) { draft[b.dataset.flip] = !draft[b.dataset.flip]; }
+  else return;
+  // single-choice sheets apply right away, like LinkedIn
+  if (b.dataset.set && sheetKind !== 'all') { commit(draft); return closeSheet(); }
+  drawSheet(true);
 });
-document.getElementById('q').addEventListener('input', () => { limit = 150; render(); });
-document.getElementById('list').addEventListener('click', (e) => {
-  if (e.target.id === 'more') { limit += 150; render(); return; }
-  const b = e.target.closest('[data-act]'); if (!b) return;
-  const id = b.closest('li').dataset.id;
-  const set = b.dataset.act === 'save' ? saved : hidden;
-  set.has(id) ? set.delete(id) : set.add(id);
-  store.set('saved', [...saved]); store.set('hidden', [...hidden]);
-  render();
+$('sheet').addEventListener('input', (e) => { if (e.target.id === 'coSearch') { coQuery = e.target.value; drawSheet(true); } });
+$('scrim').addEventListener('click', closeSheet);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && sheetKind) closeSheet(); });
+// swipe the sheet down to close
+(() => {
+  let y0 = null;
+  $('sheet').addEventListener('touchstart', (e) => { if (e.target.closest('.sb') && $('shBody').scrollTop > 0) return; y0 = e.touches[0].clientY; }, { passive: true });
+  $('sheet').addEventListener('touchmove', (e) => { if (y0 == null) return; const d = e.touches[0].clientY - y0; if (d > 0) $('sheet').style.transform = `translateY(${d}px)`; }, { passive: true });
+  $('sheet').addEventListener('touchend', (e) => { if (y0 == null) return; const d = e.changedTouches[0].clientY - y0; $('sheet').style.transform = ''; y0 = null; if (d > 90) closeSheet(); });
+})();
+
+// ---------- toast ----------
+let toastTimer = null, undoFn = null;
+function toast(msg, undo) {
+  $('toastMsg').textContent = msg; undoFn = undo;
+  $('toastUndo').style.display = undo ? '' : 'none';
+  $('toast').classList.add('show'); clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $('toast').classList.remove('show'), 4000);
+}
+$('toastUndo').addEventListener('click', () => { if (undoFn) undoFn(); $('toast').classList.remove('show'); });
+
+// ---------- events ----------
+$('pills').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.open) return openSheet(b.dataset.open);
+  if (b.dataset.quick) {
+    const want = b.dataset.quick === 'intern' ? ['intern'] : ['intern', 'entry'];
+    const same = F.levels.length === want.length && want.every((x) => F.levels.includes(x));
+    return commit(Object.assign({}, F, { levels: same ? [] : want }));
+  }
+  if (b.dataset.cos) { coSector = b.dataset.cos; render(); }
+});
+$('tabs').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-tab]'); if (!b) return;
+  if (tab === b.dataset.tab) { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+  tab = b.dataset.tab; store.set('tab', tab); $('q').value = ''; limit = 60; render(); window.scrollTo(0, 0);
+});
+$('q').addEventListener('input', () => { limit = 60; render(); });
+$('clearq').addEventListener('click', () => { $('q').value = ''; limit = 60; render(); $('q').focus(); });
+$('q').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
+$('upd').addEventListener('click', () => load(true));
+$('list').addEventListener('click', (e) => {
+  const a = e.target.closest('a.title');
+  if (a) { const c = a.closest('.card'); viewed.add(c.dataset.id); store.set('viewed', [...viewed].slice(-3000)); setTimeout(() => { c.classList.add('seen'); }, 400); return; }
+  if (e.target.id === 'more') { limit += 60; render(); return; }
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.clear) { $('q').value = ''; return commit(Object.assign({}, DEFAULTS)); }
+  if (b.dataset.open) return openSheet(b.dataset.open);
+  if (b.dataset.date) return commit(Object.assign({}, F, { date: b.dataset.date }));
+  if (b.dataset.seg) { savedSeg = b.dataset.seg; return render(); }
+  if (b.dataset.co) { tab = 'jobs'; store.set('tab', tab); $('q').value = ''; return commit(Object.assign({}, DEFAULTS, { companies: [b.dataset.co] })); }
+  if (b.dataset.act) {
+    const id = b.closest('.card').dataset.id;
+    if (b.dataset.act === 'save') {
+      saved.has(id) ? saved.delete(id) : saved.add(id); store.set('saved', [...saved]);
+      if (tab === 'saved') render(); else {
+        const on = saved.has(id); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on);
+        b.setAttribute('aria-label', on ? 'Unsave' : 'Save');
+        if (on) toast('Saved');
+      }
+    } else {
+      const was = hidden.has(id);
+      const ids = (b.closest('.card').dataset.ids || id).split(' ');
+      for (const x of ids) was ? hidden.delete(x) : hidden.add(x);
+      store.set('hidden', [...hidden]);
+      const y = window.scrollY; render(); window.scrollTo(0, y);
+      toast(was ? 'Back in your list' : 'Hidden', () => { for (const x of ids) was ? hidden.add(x) : hidden.delete(x); store.set('hidden', [...hidden]); const yy = window.scrollY; render(); window.scrollTo(0, yy); });
+    }
+  }
 });
 
-async function load() {
+let loadedAt = 0;
+async function load(manual) {
+  if (manual) $('updt').textContent = 'Checking…';
   try {
     const r = await fetch('jobs.json?t=' + Date.now(), { cache: 'no-store' });
-    data = await r.json();
+    const fresh = await r.json();
+    const first = !data;
+    data = fresh;
+    // a new "visit" starts on first load, or after the app sat in the background for an hour
+    rollVisit();
+    loadedAt = Date.now();
     const u = new Date(data.updated);
-    document.getElementById('upd').textContent = 'Updated ' + u.toLocaleString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+    $('updt').textContent = 'Updated ' + u.toLocaleString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit' });
     render();
-    store.set('lastVisitDay', new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' }));
   } catch (e) {
-    document.getElementById('upd').textContent = 'Offline';
-    document.getElementById('list').innerHTML = '<p class="empty">Couldn\'t load the job list. Check your connection and reopen.</p>';
+    $('updt').textContent = 'Offline';
+    if (!data) $('list').innerHTML = '<div class="empty"><b>Couldn\'t load the job list</b>Check your connection and reopen the app.</div>';
   }
 }
-renderChips();
+render();
 load();
-// refresh when you come back to the app
 document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
 </script>
 </body>

@@ -3,7 +3,7 @@
     "engineer": "\\bengineer|engineering\\b",
     "intern": "\\binterns?(hip)?\\b|\\bco-?op\\b",
     "field": "mechanical|manufactur|propulsion|test|design|structur|thermal|fluid|tool|production|hardware|integration|aerospace|materials|process|industrial|mechanism|electrical|quality|systems|R&D|robotic|controls",
-    "exclude": "senior|\\bsr\\b|staff|principal|\\blead\\b|manager|director|head of|chief|\\bvp\\b|president|fellow|\\bIII\\b|\\bIV\\b|\\bV\\b|expert|software|developer|\\bSDE\\b|data|cloud|network|\\bIT\\b|security|cyber|devops|site reliability|machine learning|\\bML\\b|\\bAI\\b|sales|solutions|support engineer|customer|marketing|finance|recruit|legal|business|technician|machinist|assembler|operator|contract|game|undergraduate|field service|systems? development engineer|region services|ASIC|supply chain|planning intern|marketing|welder|journeyman|account executive|account manager|accounting",
+    "exclude": "senior|\\bsr\\b|staff|principal|\\blead\\b|manager|director|head of|chief|\\bvp\\b|president|fellow|\\bIII\\b|\\bIV\\b|\\bV\\b|expert|software|developer|\\bSDE\\b|data(?!\\s*cent(er|re))|cloud|network|\\bIT\\b|security|cyber|devops|site reliability|machine learning|\\bML\\b|\\bAI\\b|sales|solutions|support engineer|customer|marketing|finance|recruit|legal|business|technician|machinist|assembler|operator|contract|game|undergraduate|field service|systems? development engineer|region services|ASIC|supply chain|planning intern|marketing|welder|journeyman|account executive|account manager|accounting|platform service|ads platform",
     "local": "\\b(seattle|bellevue|redmond|kirkland|bothell|woodinville|issaquah|everett|mukilteo|lynnwood|arlington, wa|marysville|kent|renton|auburn|tukwila|federal way|tacoma|frederickson|puyallup|sumner|bremerton|silverdale|sedro|hamilton|bellingham|mount vernon|burlington|puget)\\b|washington(?!,? ?d\\.?c)|\\bWA\\b",
     "far": "moses lake|spokane|richland|pullman|wenatchee|yakima|vancouver, wa|layton|, UT\\b|utah|district of columbia|\\bD\\.?C\\.?\\b|airway heights|cheney|liberty lake|spokane valley|kennewick|pasco|ellensburg|walla walla|longview"
   },
@@ -118,18 +118,7 @@
       "tenant": "boeing",
       "wd": "wd1",
       "site": "EXTERNAL_CAREERS",
-      "sector": "aero",
-      "search_terms": [
-        "engineer Everett",
-        "engineer Renton",
-        "engineer Seattle",
-        "engineer Kent",
-        "engineer Auburn",
-        "engineer Tukwila",
-        "engineer Washington",
-        "intern Washington"
-      ],
-      "max_per_term": 400
+      "sector": "aero"
     },
     {
       "name": "Janicki Industries",
@@ -163,7 +152,8 @@
       "name": "Astronics",
       "ats": "greenhouse",
       "slug": "astronicscorporation",
-      "sector": "aero"
+      "sector": "aero",
+      "town": "Kirkland"
     },
     {
       "name": "Echodyne",
@@ -318,7 +308,8 @@
       "sector": "aero",
       "ats": "oracle",
       "host": "icfcjb.fa.ocs.oraclecloud.com",
-      "site": "CX_4001"
+      "site": "CX_4001",
+      "town": "Redmond"
     },
     {
       "name": "Lockheed Martin (Silverdale/Bangor)",
@@ -949,6 +940,116 @@
       "sector": "other",
       "days": 3,
       "pages": 20
+    },
+    {
+      "name": "Karman Space & Defense (Seattle, Mukilteo)",
+      "ats": "greenhouse",
+      "slug": "karmanspacedefense",
+      "sector": "aero",
+      "town": "Mukilteo",
+      "aliases": [
+        "Karman Space & Defense",
+        "Karman"
+      ]
+    },
+    {
+      "name": "Rocketdyne (Redmond, ex-Aerojet)",
+      "ats": "adp",
+      "cid": "2e2e53cb-a46b-4af4-8de5-702135f719fe",
+      "ccId": "37629043_2",
+      "sector": "aero",
+      "town": "Redmond",
+      "aliases": [
+        "Rocketdyne"
+      ]
+    },
+    {
+      "name": "Swarm Aero",
+      "ats": "ashby",
+      "slug": "swarmaero",
+      "sector": "aero",
+      "town": "Seattle"
+    },
+    {
+      "name": "Kickmaker",
+      "ats": "lever",
+      "slug": "kickmaker",
+      "sector": "other",
+      "town": "Seattle"
+    },
+    {
+      "name": "MORSE Corp",
+      "ats": "greenhouse",
+      "slug": "morsecorp",
+      "sector": "aero",
+      "town": "Seattle"
+    },
+    {
+      "name": "Seametrics (TASI, Kent)",
+      "ats": "ukg",
+      "board": "https://tasimeasurement.rec.pro.ukg.net/TAS1500TASI/JobBoard/2fb92a77-0aea-4e34-864b-11b2e6f60345",
+      "sector": "other",
+      "town": "Kent",
+      "aliases": [
+        "Seametrics"
+      ]
+    },
+    {
+      "name": "Weyerhaeuser",
+      "ats": "ukg",
+      "board": "https://weyerhaeuser.rec.pro.ukg.net/WEY1001WEYE/JobBoard/29f87a50-a2b7-400b-9a35-308261dedb42",
+      "sector": "other",
+      "town": "Federal Way"
+    },
+    {
+      "name": "Weyerhaeuser (students)",
+      "ats": "ukg",
+      "board": "https://weyerhaeuser.rec.pro.ukg.net/WEY1001WEYE/JobBoard/111e37e6-d931-492f-b38d-f35b37e54e64",
+      "sector": "other",
+      "town": "Federal Way"
+    },
+    {
+      "name": "Ardurra",
+      "ats": "ukg",
+      "board": "https://recruiting.ultipro.com/KIN1006KEAI/JobBoard/8e199c52-6215-4abe-8c26-7a342cd4ff7e",
+      "sector": "other",
+      "town": "Everett"
+    },
+    {
+      "name": "Ardurra (students and entry level)",
+      "ats": "ukg",
+      "board": "https://recruiting.ultipro.com/KIN1006KEAI/JobBoard/0dfa0f6d-23a0-4b49-98b5-4151f23039c7",
+      "sector": "other",
+      "town": "Everett"
+    },
+    {
+      "name": "Carollo Engineers",
+      "ats": "dejobs",
+      "company": "Carollo Engineers",
+      "sector": "other",
+      "town": "Seattle",
+      "via": "mac"
+    },
+    {
+      "name": "Microsoft",
+      "sector": "other",
+      "ats": "eightfold",
+      "host": "apply.careers.microsoft.com",
+      "domain": "microsoft.com",
+      "via": "mac",
+      "delay": 12,
+      "max": 80,
+      "location": "Redmond, Washington",
+      "town": "Redmond",
+      "queries": [
+        "mechanical engineer",
+        "electrical engineer",
+        "hardware engineer",
+        "silicon engineer",
+        "manufacturing engineer",
+        "engineering intern"
+      ],
+      "notes": "Checked slowly from the Mac; the board rate-limits"
     }
   ],
   "manual": [
@@ -971,7 +1072,8 @@
     },
     {
       "name": "Kymeta",
-      "url": "https://jobs.jobvite.com/kymetacorp/jobs"
+      "url": "https://jobs.jobvite.com/kymetacorp/jobs",
+      "town": "Woodinville"
     },
     {
       "name": "Verathon",
@@ -1001,7 +1103,8 @@
       "sector": "other",
       "why": "Paycom, no public JSON endpoint found (Seattle + Tacoma offices)",
       "careers_page": "https://www.paycomonline.net/v4/ats/web.php/jobs?clientkey=772C3279D75E0FFAB33570D71B96316D",
-      "render": true
+      "render": true,
+      "town": "Tacoma"
     },
     {
       "name": "Glumac (Tetra Tech)",
@@ -1032,7 +1135,8 @@
       "sector": "other",
       "why": "Taleo Business Edition, HTML only, no public JSON",
       "careers_page": "https://phg.tbe.taleo.net/phg02/ats/careers/v2/searchResults?org=MCKINSTRY&cws=41",
-      "render": true
+      "render": true,
+      "town": "Seattle"
     },
     {
       "name": "Turner Construction (Seattle)",
@@ -1056,7 +1160,8 @@
       "name": "Electric Era Technologies",
       "url": "https://www.electricera.tech/careers",
       "sector": "other",
-      "why": "Seattle EV fast-charging hardware; jobs posted only as LinkedIn links, no ATS"
+      "why": "Seattle EV fast-charging hardware; jobs posted only as LinkedIn links, no ATS",
+      "town": "Seattle"
     },
     {
       "name": "Fujifilm Sonosite (Bothell)",
@@ -1183,7 +1288,8 @@
       "sector": "other",
       "why": "Handheld AI ultrasound devices; Redmond (medical-device hardware). Careers page, no supported ATS found. Found from prior knowledge.",
       "careers_page": "https://echonous.com/about/careers/",
-      "render": true
+      "render": true,
+      "town": "Redmond"
     },
     {
       "name": "Emerald Battery Labs",
@@ -1282,6 +1388,41 @@
       "careers_page": "https://cacareers-crowley.icims.com",
       "render": true,
       "jobs": false
+    },
+    {
+      "name": "AMETEK (Bothell RF amplifiers)",
+      "url": "https://jobs.ametek.com/search/?q=&locationsearch=Bothell",
+      "sector": "aero",
+      "town": "Bothell",
+      "why": "SuccessFactors HTML search only"
+    },
+    {
+      "name": "Mott MacDonald (Seattle)",
+      "url": "https://apply.mottmac.com/search/?q=&locationsearch=Seattle",
+      "sector": "other",
+      "town": "Seattle",
+      "why": "Many 2027 internships and graduate engineer roles; HTML search only"
+    },
+    {
+      "name": "Precision Castparts (Woodinville, Kent, Bothell)",
+      "url": "https://pcctalentacquisitionportal.tal.net/vx/lang-en-GB/mobile-0/appcentre-ext/brand-7/xf-4529f9c669c1/candidate/jobboard/vacancy/3/adv/",
+      "sector": "aero",
+      "town": "Woodinville",
+      "why": "Oleeo board, HTML only"
+    },
+    {
+      "name": "Orano USA (Federal Way)",
+      "url": "https://jobs.orano.group/en_US/jobs/SearchJobs/?2894=%5B27227%5D&2894_format=464&listFilterMode=1",
+      "sector": "energy",
+      "town": "Federal Way",
+      "why": "Nuclear fuel cycle; HTML only"
+    },
+    {
+      "name": "Festo USA (Seattle)",
+      "url": "https://jobs.festo.com/search/?q=Seattle",
+      "sector": "other",
+      "town": "Seattle",
+      "why": "Application engineers; HTML only"
     }
   ],
   "notify_board_problems": true,
@@ -1307,6 +1448,18 @@
     "controls engineer",
     "robotics engineer",
     "industrial engineer",
-    "materials engineer"
+    "materials engineer",
+    "automation engineer",
+    "lab engineer",
+    "integration engineer",
+    "hardware development engineer",
+    "data center engineer",
+    "satellite engineer",
+    "space engineer",
+    "aerospace engineer",
+    "facilities engineer",
+    "engineering intern",
+    "intern mechanical",
+    "intern electrical"
   ]
 }
