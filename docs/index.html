@@ -241,7 +241,7 @@ let tab = store.get('tab', 'jobs');
 if (!['jobs', 'saved', 'news', 'companies'].includes(tab)) tab = 'jobs';
 let F = Object.assign({}, DEFAULTS, store.get('filters2', {}));
 let saved = new Set(store.get('saved', []));
-let hidden = new Set(store.get('hidden', []));
+let hidden = new Set(store.get('hidden', []).filter((x) => x.includes('|')));
 // Hiding also remembers company + title, so the same role stays gone when it is reposted
 // under a new id or shows up again from another source.
 let hiddenKeys = new Set(store.get('hiddenKeys', []));
@@ -358,7 +358,7 @@ function card(j) {
   if (LEVEL_TAG[j.level]) tags.push(`<span class="tag ${j.level}">${LEVEL_TAG[j.level]}</span>`);
   if (j.sector !== 'other') tags.push(`<span class="tag ${j.sector}">${SECT_SHORT[j.sector]}</span>`);
   const sv = saved.has(j.id), hd = isHid(j);
-  return `<li class="card${seen ? ' seen' : ''}" data-id="${esc(j.id)}" data-ids="${esc((grp || [j]).map((x) => x.id).join(' '))}">
+  return `<li class="card${seen ? ' seen' : ''}" data-id="${esc(j.id)}" data-ids="${esc(JSON.stringify((grp || [j]).map((x) => x.id)))}">
     <div class="logo ${j.sector}" aria-hidden="true">${esc(initials(j.company))}</div>
     <div class="cbody">
       <a class="title" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.title)}</a>
@@ -675,7 +675,7 @@ $('list').addEventListener('click', (e) => {
       }
     } else {
       const card = b.closest('.card');
-      const ids = (card.dataset.ids || id).split(' ');
+      const ids = card.dataset.ids ? JSON.parse(card.dataset.ids) : [id];
       const grp = data.jobs.filter((j) => ids.includes(j.id));
       const was = grp.some(isHid);
       const keys = grp.map(hidKey);
