@@ -19,6 +19,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: Check boards
+        env:
+          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
         run: python3 watch.py
       - name: Save results
         run: |

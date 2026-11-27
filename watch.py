@@ -333,7 +333,7 @@ def watched_by_board(company):
     if _WATCH is None:
         _WATCH = {}
         for c in CFG['companies']:
-            if c['ats'] == 'dejobs_all':
+            if c['ats'] in ('dejobs_all', 'adzuna'):
                 continue
             for n in [c['name'], c.get('company', '')] + c.get('aliases', []):
                 k = _ckey(n.split(' / ')[0])
@@ -371,7 +371,7 @@ def check(args):
                     continue  # big mixed feed: keep only clearly hardware-side titles
                 if watched_by_board(co):
                     continue  # already covered by that company's own board
-                hits.append(dict(id=f"ALL|{i}", company=co, sector=sector_for_company(co, t), title=' '.join(t.split()),
+                hits.append(dict(id=f"{'AZ' if c['ats'] == 'adzuna' else 'ALL'}|{i}", company=co, sector=sector_for_company(co, t), title=' '.join(t.split()),
                                  location=l, url=u, source='sweep', posted=row[5] if len(row) > 5 else ''))
             else:
                 hits.append(dict(id=f"{c['name']}|{i}", company=c['name'], sector=sector_of(c, t), title=' '.join(t.split()), location=l, url=u))
@@ -743,6 +743,22 @@ def main():
                 p['added'] = added
                 log(f'{name} (page): changed')
         p['hash'], p['text'] = digest, text
+
+    # the two all-employer sweeps often list the same posting: keep the first copy
+    def _dkey(j):
+        return _ckey(j['company'])[:12] + '|' + re.sub(r'[^a-z0-9]', '', j['title'].lower())
+    taken = set()
+    for name, total, hits, err in results:
+        if hits and hits[0].get('source') != 'sweep':
+            taken |= {_dkey(j) for j in hits}
+    for idx, (name, total, hits, err) in enumerate(results):
+        if hits and hits[0].get('source') == 'sweep':
+            keep = []
+            for j in hits:
+                k = _dkey(j)
+                if k not in taken:
+                    taken.add(k); keep.append(j)
+            results[idx] = (name, total, keep, err)
 
     new, failed = [], []
     for name, total, hits, err in results:

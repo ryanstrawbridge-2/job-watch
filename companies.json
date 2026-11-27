@@ -942,6 +942,13 @@
       "ats": "ashby",
       "slug": "Nautilus Biotechnology",
       "sector": "other"
+    },
+    {
+      "name": "All Seattle-area employers (Adzuna search)",
+      "ats": "adzuna",
+      "sector": "other",
+      "days": 3,
+      "pages": 20
     }
   ],
   "manual": [
