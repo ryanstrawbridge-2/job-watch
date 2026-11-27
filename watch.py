@@ -309,7 +309,37 @@ def talemetry(c, cache):
     return out
 
 
-FETCH = dict(talemetry=talemetry, dejobs_all=dejobs_all, dejobs=dejobs, json=jsonfeed, gem=gem, smartrecruiters=smartrecruiters, workable=workable, eightfold=eightfold, oracle=oracle, greenhouse=greenhouse, ashby=ashby, lever=lever, breezy=breezy, rippling=rippling, ukg=ukg, workday=workday, amazon=amazon)
+def adzuna(c, cache):
+    """Adzuna job search (collects postings from company sites and other boards).
+    Needs ADZUNA_APP_ID / ADZUNA_APP_KEY (GitHub secrets); skipped quietly without them."""
+    app_id, app_key = os.environ.get('ADZUNA_APP_ID'), os.environ.get('ADZUNA_APP_KEY')
+    if not (app_id and app_key):
+        log('Adzuna: no key set yet, skipping')
+        return []
+    out, seen = [], set()
+    for what in c.get('queries', ['engineer', 'engineering intern']):
+        for page in range(1, c.get('pages', 20) + 1):
+            q = urllib.parse.urlencode({'app_id': app_id, 'app_key': app_key, 'results_per_page': 50, 'what': what,
+                                        'where': 'Seattle, WA', 'distance': 80, 'max_days_old': c.get('days', 3),
+                                        'sort_by': 'date', 'content-type': 'application/json'})
+            d = curl(f'https://api.adzuna.com/v1/api/jobs/us/search/{page}?{q}')
+            res = d.get('results', [])
+            for j in res:
+                if j['id'] in seen:
+                    continue
+                seen.add(j['id'])
+                co = ((j.get('company') or {}).get('display_name') or '').strip()
+                if not co or STAFFING.search(co):
+                    continue
+                loc = (j.get('location') or {}).get('display_name', '')
+                out.append((str(j['id']), j.get('title', ''), loc, j.get('redirect_url', ''), co, (j.get('created') or '')[:10]))
+            if len(res) < 50:
+                break
+            time.sleep(2.5)  # free tier allows about 25 calls a minute
+    return out
+
+
+FETCH = dict(adzuna=adzuna, talemetry=talemetry, dejobs_all=dejobs_all, dejobs=dejobs, json=jsonfeed, gem=gem, smartrecruiters=smartrecruiters, workable=workable, eightfold=eightfold, oracle=oracle, greenhouse=greenhouse, ashby=ashby, lever=lever, breezy=breezy, rippling=rippling, ukg=ukg, workday=workday, amazon=amazon)
 
 
 def sector_of(c, title):
