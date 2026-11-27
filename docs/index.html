@@ -242,6 +242,13 @@ if (!['jobs', 'saved', 'news', 'companies'].includes(tab)) tab = 'jobs';
 let F = Object.assign({}, DEFAULTS, store.get('filters2', {}));
 let saved = new Set(store.get('saved', []));
 let hidden = new Set(store.get('hidden', []));
+// Hiding also remembers company + title, so the same role stays gone when it is reposted
+// under a new id or shows up again from another source.
+let hiddenKeys = new Set(store.get('hiddenKeys', []));
+const normT = (t) => t.toLowerCase().replace(/\(.*?\)/g, ' ').replace(/[^a-z0-9]+/g, ' ').trim();
+const hidKey = (j) => (normT(j.company).split(' ')[0] || '') + '|' + normT(j.title);
+const isHid = (j) => hidden.has(j.id) || hiddenKeys.has(hidKey(j));
+const saveHidden = () => { store.set('hidden', [...hidden]); store.set('hiddenKeys', [...hiddenKeys]); };
 let viewed = new Set(store.get('viewed', []));
 let savedSeg = 'saved', coSector = 'all', limit = 60;
 let draft = null, sheetKind = null, coQuery = '', coAll = false;
@@ -268,7 +275,7 @@ const isNew = (j) => !isBase(j) && (known ? !known.has(j.id) : j.first_seen >= d
 
 // ---------- filtering ----------
 function passes(j, f, skip) {
-  if (hidden.has(j.id)) return false;
+  if (isHid(j)) return false;
   if (skip !== 'date' && f.date !== 'any') {
     if (f.date === 'visit') { if (!isNew(j)) return false; }
     else if (isBase(j) || j.first_seen < daysAgo(+f.date)) return false;
@@ -350,7 +357,7 @@ function card(j) {
   const tags = [];
   if (LEVEL_TAG[j.level]) tags.push(`<span class="tag ${j.level}">${LEVEL_TAG[j.level]}</span>`);
   if (j.sector !== 'other') tags.push(`<span class="tag ${j.sector}">${SECT_SHORT[j.sector]}</span>`);
-  const sv = saved.has(j.id), hd = hidden.has(j.id);
+  const sv = saved.has(j.id), hd = isHid(j);
   return `<li class="card${seen ? ' seen' : ''}" data-id="${esc(j.id)}" data-ids="${esc((grp || [j]).map((x) => x.id).join(' '))}">
     <div class="logo ${j.sector}" aria-hidden="true">${esc(initials(j.company))}</div>
     <div class="cbody">
@@ -442,11 +449,11 @@ function viewJobs() {
 }
 function viewSaved() {
   const w = qWords();
-  const pool = savedSeg === 'saved' ? data.jobs.filter((j) => saved.has(j.id)) : data.jobs.filter((j) => hidden.has(j.id));
+  const pool = savedSeg === 'saved' ? data.jobs.filter((j) => saved.has(j.id)) : data.jobs.filter(isHid);
   const jobs = sortJobs(pool.filter((j) => matchQ(j, w)), 'new');
   for (const j of jobs) j._grp = [j];
   const gone = savedSeg === 'saved' ? [...saved].filter((id) => !data.jobs.some((j) => j.id === id)).length : 0;
-  let h = `<div class="seg" role="tablist"><button class="${savedSeg === 'saved' ? 'on' : ''}" data-seg="saved">Saved (${data.jobs.filter((j) => saved.has(j.id)).length})</button><button class="${savedSeg === 'hidden' ? 'on' : ''}" data-seg="hidden">Hidden (${data.jobs.filter((j) => hidden.has(j.id)).length})</button></div>`;
+  let h = `<div class="seg" role="tablist"><button class="${savedSeg === 'saved' ? 'on' : ''}" data-seg="saved">Saved (${data.jobs.filter((j) => saved.has(j.id)).length})</button><button class="${savedSeg === 'hidden' ? 'on' : ''}" data-seg="hidden">Hidden (${data.jobs.filter(isHid).length})</button></div>`;
   if (!jobs.length) h += `<div class="empty"><b>${savedSeg === 'saved' ? 'Nothing saved yet' : 'Nothing hidden'}</b>${savedSeg === 'saved' ? 'Tap the bookmark on any role to keep it here.' : 'Roles you hide from the list show up here so you can bring them back.'}</div>`;
   else { const keep = limit; limit = 1e6; h += listHtml(jobs, false); limit = keep; }
   if (gone) h += `<p class="note" style="margin-top:14px">${gone} saved ${gone === 1 ? 'role has' : 'roles have'} closed and dropped off the boards.</p>`;
@@ -475,7 +482,7 @@ function viewCompanies() {
   const w = qWords();
   const ok = (c) => w.every((x) => (c.name + ' ' + (c.note || '')).toLowerCase().includes(x));
   const open = {};
-  for (const j of data.jobs) if (!hidden.has(j.id)) open[j.company] = (open[j.company] || 0) + 1;
+  for (const j of data.jobs) if (!isHid(j)) open[j.company] = (open[j.company] || 0) + 1;
   let h = '';
   for (const sec of ['energy', 'aero', 'other']) {
     if (coSector !== 'all' && coSector !== 'open' && coSector !== sec) continue;
@@ -502,7 +509,7 @@ function render() {
   const ph = pillsHtml();
   $('pills').innerHTML = ph; $('pills').style.display = ph ? '' : 'none';
   if (!ph) $('pills').previousElementSibling.style.marginBottom = '10px'; else $('pills').previousElementSibling.style.marginBottom = '';
-  const newN = data ? data.jobs.filter((j) => !hidden.has(j.id) && isNew(j) && passes(j, Object.assign({}, F, { date: 'any' }))).length : 0;
+  const newN = data ? data.jobs.filter((j) => !isHid(j) && isNew(j) && passes(j, Object.assign({}, F, { date: 'any' }))).length : 0;
   $('tabs').innerHTML = TABS.map(([k, l, ic]) => `<button class="${tab === k ? 'on' : ''}" data-tab="${k}" aria-current="${tab === k ? 'page' : 'false'}">${icon(ic)}${l}${k === 'jobs' && newN && tab !== 'jobs' ? `<span class="cnt">${newN > 99 ? '99+' : newN}</span>` : ''}</button>`).join('');
   if (!data) return;
   $('list').innerHTML = tab === 'jobs' ? viewJobs() : tab === 'saved' ? viewSaved() : tab === 'news' ? viewNews() : viewCompanies();
@@ -667,12 +674,21 @@ $('list').addEventListener('click', (e) => {
         if (on) toast('Saved');
       }
     } else {
-      const was = hidden.has(id);
-      const ids = (b.closest('.card').dataset.ids || id).split(' ');
-      for (const x of ids) was ? hidden.delete(x) : hidden.add(x);
-      store.set('hidden', [...hidden]);
-      const y = window.scrollY; render(); window.scrollTo(0, y);
-      toast(was ? 'Back in your list' : 'Hidden', () => { for (const x of ids) was ? hidden.add(x) : hidden.delete(x); store.set('hidden', [...hidden]); const yy = window.scrollY; render(); window.scrollTo(0, yy); });
+      const card = b.closest('.card');
+      const ids = (card.dataset.ids || id).split(' ');
+      const grp = data.jobs.filter((j) => ids.includes(j.id));
+      const was = grp.some(isHid);
+      const keys = grp.map(hidKey);
+      const apply = (hide) => {
+        for (const x of ids) hide ? hidden.add(x) : hidden.delete(x);
+        for (const k of keys) hide ? hiddenKeys.add(k) : hiddenKeys.delete(k);
+        saveHidden();
+      };
+      const redraw = () => { const y = window.scrollY; render(); window.scrollTo(0, y); };
+      apply(!was);
+      card.style.display = 'none';
+      redraw();
+      toast(was ? 'Back in your list' : 'Hidden', () => { apply(was); redraw(); });
     }
   }
 });
@@ -687,6 +703,10 @@ async function load(manual) {
     data = fresh;
     // a new "visit" starts on first load, or after the app sat in the background for an hour
     rollVisit();
+    // older versions saved only ids; carry those over to company + title
+    let mig = false;
+    for (const j of data.jobs) if (hidden.has(j.id) && !hiddenKeys.has(hidKey(j))) { hiddenKeys.add(hidKey(j)); mig = true; }
+    if (mig) saveHidden();
     loadedAt = Date.now();
     const u = new Date(data.updated);
     $('updt').textContent = 'Updated ' + u.toLocaleString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit' });
